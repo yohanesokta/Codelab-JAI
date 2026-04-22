@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CodeLab - Admin Submissions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Space+Grotesk:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#101419",
+                    "on-tertiary-fixed": "#301400",
+                    "primary-container": "#007acc",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#9fcaff",
+                    "on-tertiary-container": "#ffffff",
+                    "inverse-on-surface": "#2d3136",
+                    "surface-container": "#1c2025",
+                    "on-primary-fixed": "#001d36",
+                    "surface-container-high": "#272a30",
+                    "tertiary": "#ffb784",
+                    "on-primary-fixed-variant": "#00497d",
+                    "tertiary-container": "#b95e01",
+                    "on-primary-container": "#ffffff",
+                    "on-secondary-container": "#b6b4b5",
+                    "secondary-fixed-dim": "#c8c6c7",
+                    "error": "#ffb4ab",
+                    "background": "#101419",
+                    "on-secondary-fixed": "#1b1b1c",
+                    "surface-variant": "#31353b",
+                    "surface-tint": "#9fcaff",
+                    "primary-fixed": "#d1e4ff",
+                    "on-background": "#e0e2ea",
+                    "on-surface": "#e0e2ea",
+                    "outline": "#8a919d",
+                    "surface-container-low": "#181c21",
+                    "secondary": "#c8c6c7",
+                    "surface-container-highest": "#31353b",
+                    "error-container": "#93000a",
+                    "inverse-surface": "#e0e2ea",
+                    "tertiary-fixed-dim": "#ffb784",
+                    "secondary-fixed": "#e4e2e3",
+                    "on-error": "#690005",
+                    "on-surface-variant": "#c0c7d3",
+                    "tertiary-fixed": "#ffdcc6",
+                    "surface-bright": "#36393f",
+                    "on-secondary-fixed-variant": "#474648",
+                    "on-primary": "#003258",
+                    "inverse-primary": "#0061a4",
+                    "primary": "#9fcaff",
+                    "outline-variant": "#404751",
+                    "surface-container-lowest": "#0b0e13",
+                    "on-secondary": "#303031",
+                    "secondary-container": "#474648",
+                    "surface": "#101419",
+                    "on-tertiary": "#4f2500",
+                    "on-tertiary-fixed-variant": "#713700"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "48px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "unit": "4px",
+                    "lg": "24px",
+                    "gutter": "1px",
+                    "sidebar-width": "260px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "body-main": ["Inter"],
+                    "caption": ["Inter"],
+                    "h2": ["Inter"],
+                    "body-mono": ["Space Grotesk"],
+                    "h1": ["Inter"]
+            },
+            "fontSize": {
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-main": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "h2": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-mono": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { background-color: #1e1e1e; color: #e0e2ea; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1e1e1e; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333333; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #444444; }
+    </style>
+</head>
+<body class="font-body-main antialiased selection:bg-primary-container selection:text-white">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-12 w-full px-4 sticky top-0 z-50 bg-zinc-900 dark:bg-[#1e1e1e] border-b border-[#333333] font-['Inter'] antialiased text-sm tracking-tight">
+<div class="flex items-center gap-8 h-full">
+<div class="text-lg font-bold text-white tracking-tighter">CodeLab</div>
+<nav class="flex items-center h-full gap-4">
+<a class="text-zinc-400 hover:text-zinc-200 transition-colors" href="#">Dashboard</a>
+<a class="text-zinc-400 hover:text-zinc-200 transition-colors" href="#">Problems</a>
+<a class="text-white border-b-2 border-[#007acc] h-full flex items-center px-1" href="#">Submissions</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-zinc-400 hover:bg-[#2d2d2d] p-1.5 rounded cursor-pointer transition-all duration-150" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-zinc-400 hover:bg-[#2d2d2d] p-1.5 rounded cursor-pointer transition-all duration-150" data-icon="terminal">terminal</span>
+<span class="material-symbols-outlined text-zinc-400 hover:bg-[#2d2d2d] p-1.5 rounded cursor-pointer transition-all duration-150" data-icon="settings">settings</span>
+</div>
+<img alt="User profile avatar" class="w-7 h-7 rounded-full border border-[#333333]" data-alt="Close-up profile photo of a professional software engineer in a modern office with soft bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCLhXAraKO5FJP0Y2RY3bgTbvkxHG3LbYm-iV1QcV9j36NQ1F9xqHR_QQtKiL7c3CzdDGBPoVyV1P-rzL99wpY0AqRJsgmun47Y-7hDvIhMXSt-wn46O91dV3xRsGG5JGSU5I6qZa1ckSLVlI_pfEcurKfibrFwUF9Rq1Er9SAaBJQisx10K8LPJcAKXtrI35quC4Nxwutucpu9mbTtl6dR587v3aN5UYS6goVEczUOj7bTe7fh4KHFVUa0lf1bgqzxci1rXkqusc"/>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-[calc(100vh-48px)] w-64 border-r border-[#333333] bg-zinc-800 dark:bg-[#252526] fixed left-0 top-12 z-40">
+<div class="p-4 border-b border-[#333333]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-[#007acc] rounded flex items-center justify-center text-white font-bold text-xs">CS</div>
+<div>
+<div class="font-['Inter'] uppercase text-[11px] font-semibold tracking-wider text-white">WORKSPACE</div>
+<div class="font-['Inter'] text-[10px] text-zinc-500">CS101 - Practical</div>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-2 overflow-y-auto custom-scrollbar">
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="folder_open">folder_open</span>
+<span class="font-['Inter'] uppercase text-[11px] font-semibold tracking-wider">Explorer</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_tree">account_tree</span>
+<span class="font-['Inter'] uppercase text-[11px] font-semibold tracking-wider">Source Control</span>
+</a>
+<a class="bg-[#2d2d2d] text-white border-l-2 border-[#007acc] flex items-center px-4 py-3 gap-3" href="#">
+<span class="material-symbols-outlined text-[20px] text-[#007acc]" data-icon="play_arrow">play_arrow</span>
+<span class="font-['Inter'] uppercase text-[11px] font-semibold tracking-wider">Run &amp; Debug</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="extension">extension</span>
+<span class="font-['Inter'] uppercase text-[11px] font-semibold tracking-wider">Extensions</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-[#333333]">
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_circle">account_circle</span>
+<span class="font-['Inter'] uppercase text-[11px] font-semibold tracking-wider">Account</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="font-['Inter'] uppercase text-[11px] font-semibold tracking-wider">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 min-h-[calc(100vh-48px)] bg-[#1e1e1e]">
+<div class="max-w-6xl mx-auto p-md space-y-md">
+<!-- Page Header & Filters -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">Student Submissions</h1>
+<p class="font-caption text-caption text-on-surface-variant mt-1">Review and manage recent practical work from CS101.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-outline pointer-events-none" data-icon="search">search</span>
+<input class="bg-[#252526] border border-[#333333] rounded px-9 py-1.5 text-sm w-64 focus:outline-none focus:ring-1 focus:ring-primary-container focus:border-primary-container text-on-surface" placeholder="Search NIM..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-outline">FILTER:</span>
+<select class="bg-[#252526] border border-[#333333] rounded px-3 py-1.5 text-sm text-on-surface focus:ring-1 focus:ring-primary-container appearance-none pr-8 cursor-pointer">
+<option>All Problems</option>
+<option>Python Basics</option>
+<option>Data Structures 101</option>
+<option>File I/O Challenge</option>
+</select>
+</div>
+<button class="flex items-center gap-2 bg-[#007acc] text-white px-4 py-1.5 rounded font-label-caps text-[12px] hover:bg-opacity-90 active:opacity-80 transition-all">
+<span class="material-symbols-outlined text-[16px]" data-icon="download">download</span>
+                            EXPORT CSV
+                        </button>
+</div>
+</div>
+<!-- Stats Overview Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter bg-[#333333] border border-[#333333]">
+<div class="bg-[#252526] p-md">
+<div class="font-label-caps text-label-caps text-outline mb-2">TOTAL SUBMISSIONS</div>
+<div class="font-h1 text-h1 text-on-surface">1,284</div>
+<div class="flex items-center gap-1 text-[11px] text-green-500 mt-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span>
+<span>12% from last week</span>
+</div>
+</div>
+<div class="bg-[#252526] p-md">
+<div class="font-label-caps text-label-caps text-outline mb-2">PASS RATE</div>
+<div class="font-h1 text-h1 text-on-surface">78.5%</div>
+<div class="w-full bg-[#1e1e1e] h-1 rounded-full mt-3 overflow-hidden">
+<div class="bg-[#007acc] h-full" style="width: 78.5%;"></div>
+</div>
+</div>
+<div class="bg-[#252526] p-md">
+<div class="font-label-caps text-label-caps text-outline mb-2">ACTIVE STUDENTS</div>
+<div class="font-h1 text-h1 text-on-surface">412</div>
+<div class="font-caption text-caption text-outline mt-1">Across 4 sections</div>
+</div>
+<div class="bg-[#252526] p-md">
+<div class="font-label-caps text-label-caps text-outline mb-2">PENDING REVIEW</div>
+<div class="font-h1 text-h1 text-tertiary">24</div>
+<div class="flex items-center gap-1 text-[11px] text-tertiary mt-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="timer">timer</span>
+<span>Requires manual grading</span>
+</div>
+</div>
+</div>
+<!-- Main Data Table Container -->
+<div class="border border-[#333333] bg-[#252526]">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#252526] border-b border-[#333333]">
+<th class="px-md py-3 font-label-caps text-label-caps text-outline uppercase">NIM</th>
+<th class="px-md py-3 font-label-caps text-label-caps text-outline uppercase">Student Name</th>
+<th class="px-md py-3 font-label-caps text-label-caps text-outline uppercase">Problem Name</th>
+<th class="px-md py-3 font-label-caps text-label-caps text-outline uppercase">Status</th>
+<th class="px-md py-3 font-label-caps text-label-caps text-outline uppercase">Score</th>
+<th class="px-md py-3 font-label-caps text-label-caps text-outline uppercase">Timestamp</th>
+<th class="px-md py-3 font-label-caps text-label-caps text-outline uppercase text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#333333]">
+<!-- Row 1 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group cursor-pointer">
+<td class="px-md py-4 font-body-mono text-primary">220104821</td>
+<td class="px-md py-4 font-body-main text-on-surface">Alex Thompson</td>
+<td class="px-md py-4 font-body-main text-on-surface">Python Basics: Fibonacci</td>
+<td class="px-md py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-900/30 text-green-400 text-[11px] font-bold uppercase tracking-wider border border-green-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                        Pass
+                                    </span>
+</td>
+<td class="px-md py-4 font-body-mono text-on-surface">100/100</td>
+<td class="px-md py-4 font-caption text-caption text-outline">2 mins ago</td>
+<td class="px-md py-4 text-right">
+<span class="material-symbols-outlined text-outline group-hover:text-white transition-colors" data-icon="open_in_new">open_in_new</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group cursor-pointer">
+<td class="px-md py-4 font-body-mono text-primary">220104953</td>
+<td class="px-md py-4 font-body-main text-on-surface">Elena Rodriguez</td>
+<td class="px-md py-4 font-body-main text-on-surface">Linked List Reversal</td>
+<td class="px-md py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-900/30 text-red-400 text-[11px] font-bold uppercase tracking-wider border border-red-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                        Fail
+                                    </span>
+</td>
+<td class="px-md py-4 font-body-mono text-on-surface">45/100</td>
+<td class="px-md py-4 font-caption text-caption text-outline">15 mins ago</td>
+<td class="px-md py-4 text-right">
+<span class="material-symbols-outlined text-outline group-hover:text-white transition-colors" data-icon="open_in_new">open_in_new</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group cursor-pointer">
+<td class="px-md py-4 font-body-mono text-primary">220105012</td>
+<td class="px-md py-4 font-body-main text-on-surface">Kevin Zhang</td>
+<td class="px-md py-4 font-body-main text-on-surface">Sorting Algorithms</td>
+<td class="px-md py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-900/30 text-zinc-400 text-[11px] font-bold uppercase tracking-wider border border-zinc-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                                        Pending
+                                    </span>
+</td>
+<td class="px-md py-4 font-body-mono text-on-surface">--/100</td>
+<td class="px-md py-4 font-caption text-caption text-outline">42 mins ago</td>
+<td class="px-md py-4 text-right">
+<span class="material-symbols-outlined text-outline group-hover:text-white transition-colors" data-icon="open_in_new">open_in_new</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group cursor-pointer">
+<td class="px-md py-4 font-body-mono text-primary">220104771</td>
+<td class="px-md py-4 font-body-main text-on-surface">Sarah Miller</td>
+<td class="px-md py-4 font-body-main text-on-surface">Python Basics: Fibonacci</td>
+<td class="px-md py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-900/30 text-green-400 text-[11px] font-bold uppercase tracking-wider border border-green-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                        Pass
+                                    </span>
+</td>
+<td class="px-md py-4 font-body-mono text-on-surface">95/100</td>
+<td class="px-md py-4 font-caption text-caption text-outline">1 hour ago</td>
+<td class="px-md py-4 text-right">
+<span class="material-symbols-outlined text-outline group-hover:text-white transition-colors" data-icon="open_in_new">open_in_new</span>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group cursor-pointer">
+<td class="px-md py-4 font-body-mono text-primary">220105128</td>
+<td class="px-md py-4 font-body-main text-on-surface">Marcus Lane</td>
+<td class="px-md py-4 font-body-main text-on-surface">Binary Search Tree</td>
+<td class="px-md py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-900/30 text-green-400 text-[11px] font-bold uppercase tracking-wider border border-green-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                        Pass
+                                    </span>
+</td>
+<td class="px-md py-4 font-body-mono text-on-surface">100/100</td>
+<td class="px-md py-4 font-caption text-caption text-outline">3 hours ago</td>
+<td class="px-md py-4 text-right">
+<span class="material-symbols-outlined text-outline group-hover:text-white transition-colors" data-icon="open_in_new">open_in_new</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between py-4">
+<div class="font-caption text-caption text-outline">
+                        Showing <span class="text-on-surface">1 - 5</span> of <span class="text-on-surface">1,284</span> results
+                    </div>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded hover:bg-[#2d2d2d] border border-[#333333] text-outline disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="px-3 py-1 rounded bg-[#007acc] text-white text-xs font-bold">1</button>
+<button class="px-3 py-1 rounded hover:bg-[#2d2d2d] text-outline text-xs border border-transparent">2</button>
+<button class="px-3 py-1 rounded hover:bg-[#2d2d2d] text-outline text-xs border border-transparent">3</button>
+<span class="text-outline px-1">...</span>
+<button class="px-3 py-1 rounded hover:bg-[#2d2d2d] text-outline text-xs border border-transparent">257</button>
+<button class="p-1 rounded hover:bg-[#2d2d2d] border border-[#333333] text-outline">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Detail Panel (Mockup of Bento/High-end UI) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md">
+<div class="lg:col-span-2 bg-[#252526] border border-[#333333] p-md overflow-hidden relative">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-h2 text-h2 text-on-surface">Submission Distribution</h3>
+<p class="font-caption text-caption text-outline">Time of day submission density</p>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="query_stats">query_stats</span>
+</div>
+<!-- Mock Heatmap -->
+<div class="grid grid-cols-24 gap-1 h-32">
+<!-- JS would loop this but we'll hardcode some variety -->
+<div class="bg-[#007acc]/10 rounded-sm"></div>
+<div class="bg-[#007acc]/20 rounded-sm"></div>
+<div class="bg-[#007acc]/40 rounded-sm"></div>
+<div class="bg-[#007acc]/10 rounded-sm"></div>
+<div class="bg-[#007acc]/60 rounded-sm"></div>
+<div class="bg-[#007acc]/80 rounded-sm"></div>
+<div class="bg-[#007acc] rounded-sm"></div>
+<div class="bg-[#007acc]/70 rounded-sm"></div>
+<div class="bg-[#007acc]/40 rounded-sm"></div>
+<div class="bg-[#007acc]/20 rounded-sm"></div>
+<div class="bg-[#007acc]/10 rounded-sm"></div>
+<div class="bg-[#007acc]/30 rounded-sm"></div>
+<div class="bg-[#007acc]/50 rounded-sm"></div>
+<div class="bg-[#007acc]/90 rounded-sm"></div>
+<div class="bg-[#007acc] rounded-sm"></div>
+<div class="bg-[#007acc]/60 rounded-sm"></div>
+<div class="bg-[#007acc]/20 rounded-sm"></div>
+<div class="bg-[#007acc]/10 rounded-sm"></div>
+<div class="bg-[#007acc]/10 rounded-sm"></div>
+<div class="bg-[#007acc]/40 rounded-sm"></div>
+<div class="bg-[#007acc]/20 rounded-sm"></div>
+<div class="bg-[#007acc]/10 rounded-sm"></div>
+<div class="bg-[#007acc]/10 rounded-sm"></div>
+<div class="bg-[#007acc]/10 rounded-sm"></div>
+</div>
+<div class="flex justify-between mt-2 font-caption text-[10px] text-outline px-1">
+<span>00:00</span>
+<span>06:00</span>
+<span>12:00</span>
+<span>18:00</span>
+<span>23:59</span>
+</div>
+</div>
+<div class="bg-primary-container p-md border border-[#333333] flex flex-col justify-between relative overflow-hidden group">
+<!-- Decorative bg texture -->
+<div class="absolute -right-8 -bottom-8 opacity-20 pointer-events-none group-hover:rotate-12 transition-transform duration-700">
+<span class="material-symbols-outlined text-[160px]" data-icon="terminal">terminal</span>
+</div>
+<div>
+<div class="font-label-caps text-label-caps text-on-primary-container/70 mb-2">QUICK ACCESS</div>
+<h3 class="font-h2 text-h2 text-white mb-4">Review Pending Tasks</h3>
+</div>
+<div class="space-y-2 relative z-10">
+<a class="flex items-center justify-between bg-white/10 hover:bg-white/20 p-2 rounded transition-colors text-white text-sm" href="#">
+<span>Manual Grade: AI Logic</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</a>
+<a class="flex items-center justify-between bg-white/10 hover:bg-white/20 p-2 rounded transition-colors text-white text-sm" href="#">
+<span>Flagged: Plagiarism Check</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

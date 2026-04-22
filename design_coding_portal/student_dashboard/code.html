@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Space+Grotesk:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#101419",
+                    "on-tertiary-fixed": "#301400",
+                    "primary-container": "#007acc",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#9fcaff",
+                    "on-tertiary-container": "#ffffff",
+                    "inverse-on-surface": "#2d3136",
+                    "surface-container": "#1c2025",
+                    "on-primary-fixed": "#001d36",
+                    "surface-container-high": "#272a30",
+                    "tertiary": "#ffb784",
+                    "on-primary-fixed-variant": "#00497d",
+                    "tertiary-container": "#b95e01",
+                    "on-primary-container": "#ffffff",
+                    "on-secondary-container": "#b6b4b5",
+                    "secondary-fixed-dim": "#c8c6c7",
+                    "error": "#ffb4ab",
+                    "background": "#101419",
+                    "on-secondary-fixed": "#1b1b1c",
+                    "surface-variant": "#31353b",
+                    "surface-tint": "#9fcaff",
+                    "primary-fixed": "#d1e4ff",
+                    "on-background": "#e0e2ea",
+                    "on-surface": "#e0e2ea",
+                    "outline": "#8a919d",
+                    "surface-container-low": "#181c21",
+                    "secondary": "#c8c6c7",
+                    "surface-container-highest": "#31353b",
+                    "error-container": "#93000a",
+                    "inverse-surface": "#e0e2ea",
+                    "tertiary-fixed-dim": "#ffb784",
+                    "secondary-fixed": "#e4e2e3",
+                    "on-error": "#690005",
+                    "on-surface-variant": "#c0c7d3",
+                    "tertiary-fixed": "#ffdcc6",
+                    "surface-bright": "#36393f",
+                    "on-secondary-fixed-variant": "#474648",
+                    "on-primary": "#003258",
+                    "inverse-primary": "#0061a4",
+                    "primary": "#9fcaff",
+                    "outline-variant": "#404751",
+                    "surface-container-lowest": "#0b0e13",
+                    "on-secondary": "#303031",
+                    "secondary-container": "#474648",
+                    "surface": "#101419",
+                    "on-tertiary": "#4f2500",
+                    "on-tertiary-fixed-variant": "#713700"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "48px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "unit": "4px",
+                    "lg": "24px",
+                    "gutter": "1px",
+                    "sidebar-width": "260px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "body-main": ["Inter"],
+                    "caption": ["Inter"],
+                    "h2": ["Inter"],
+                    "body-mono": ["Space Grotesk"],
+                    "h1": ["Inter"]
+            },
+            "fontSize": {
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-main": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "h2": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-mono": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 18px;
+        }
+        body {
+            background-color: #1e1e1e;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #333333;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #444444;
+        }
+    </style>
+</head>
+<body class="font-body-main text-on-surface antialiased custom-scrollbar overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-12 w-full px-4 sticky top-0 z-50 bg-zinc-900 dark:bg-[#1e1e1e] font-['Inter'] antialiased text-sm tracking-tight border-b border-[#333333]">
+<div class="flex items-center gap-6">
+<span class="text-lg font-bold text-white tracking-tighter">CodeLab</span>
+<nav class="hidden md:flex items-center h-12 gap-4">
+<a class="text-white border-b-2 border-[#007acc] h-full flex items-center px-1" href="#">Dashboard</a>
+<a class="text-zinc-400 hover:text-zinc-200 transition-colors h-full flex items-center px-1" href="#">Problems</a>
+<a class="text-zinc-400 hover:text-zinc-200 transition-colors h-full flex items-center px-1" href="#">Submissions</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-zinc-400 hover:bg-[#2d2d2d] p-1.5 rounded transition-all duration-150 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-zinc-400 hover:bg-[#2d2d2d] p-1.5 rounded transition-all duration-150 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</button>
+<button class="text-zinc-400 hover:bg-[#2d2d2d] p-1.5 rounded transition-all duration-150 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-6 h-6 rounded-full overflow-hidden border border-[#333333]">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional developer in a dimly lit studio with subtle blue rim lighting on their silhouette" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjQQWdBNi3GovfkmVL1CUzjyB026ZuBMorfGXJUKuy2SeNQNXjWnGzYlFHlDVjvkFk1v9ha6_x2Myi5aPKsryfKlLG7TT-kEs1spwyMawFQDp7bVS5G3LSr6A1AjDFJNh0Ssy5HqzaD_zqnLVv-b7NHhrofozMfyNI3UkF6X54sBYhZQoNpm1U52qE7Hl_DYnWB35bBdGofjbX0km0OOGGid5rbq5fj8yTYVgTDOL3YB9gRsBEYIyV8vGDzauSp6HKdRivIrqgAiY"/>
+</div>
+</div>
+</header>
+<div class="flex min-h-[calc(100vh-48px)]">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-48px)] w-64 fixed left-0 top-12 bg-zinc-800 dark:bg-[#252526] border-r border-[#333333] z-40">
+<div class="p-4 border-b border-[#333333]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-[#007acc] rounded flex items-center justify-center text-white font-bold">CL</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface uppercase">WORKSPACE</p>
+<p class="text-[10px] text-zinc-500 font-semibold tracking-wider">CS101 - Practical</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-2 overflow-y-auto custom-scrollbar">
+<a class="bg-[#2d2d2d] text-white border-l-2 border-[#007acc] flex items-center px-4 py-3 gap-3 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[#007acc]" data-icon="folder_open">folder_open</span>
+<span class="font-label-caps text-label-caps uppercase">Explorer</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="font-label-caps text-label-caps uppercase">Source Control</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+<span class="font-label-caps text-label-caps uppercase">Run &amp; Debug</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="extension">extension</span>
+<span class="font-label-caps text-label-caps uppercase">Extensions</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-[#333333] py-2">
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-caps text-label-caps uppercase">Account</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps uppercase">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-6 bg-[#1e1e1e]">
+<div class="max-w-7xl mx-auto">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h1 class="font-h1 text-h1 text-white mb-1">Available Problems</h1>
+<p class="font-caption text-caption text-zinc-500">Solve daily challenges and master your data structure skills.</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-[#252526] text-zinc-300 px-3 py-1.5 rounded border border-[#333333] text-sm hover:bg-[#2d2d2d] transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-xs" data-icon="filter_list">filter_list</span>
+                            Filter
+                        </button>
+<button class="bg-[#252526] text-zinc-300 px-3 py-1.5 rounded border border-[#333333] text-sm hover:bg-[#2d2d2d] transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-xs" data-icon="sort">sort</span>
+                            Sort
+                        </button>
+</div>
+</div>
+<!-- Bento Grid for Problem Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Card 1 -->
+<div class="bg-[#252526] border border-[#333333] p-5 flex flex-col justify-between hover:bg-[#2a2d2e] transition-all duration-200 group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="bg-[#2d2d2d] text-primary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">Easy</span>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-[#007acc] transition-colors" data-icon="code">code</span>
+</div>
+<h2 class="font-h2 text-h2 text-white mb-2">Array Manipulation</h2>
+<p class="font-body-main text-body-main text-zinc-400 line-clamp-2">Implement a function to perform prefix sum operations on a large array efficiently.</p>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border border-[#1e1e1e] bg-zinc-700 flex items-center justify-center text-[8px] text-white">JS</div>
+<div class="w-6 h-6 rounded-full border border-[#1e1e1e] bg-zinc-700 flex items-center justify-center text-[8px] text-white">PY</div>
+<div class="w-6 h-6 rounded-full border border-[#1e1e1e] bg-zinc-700 flex items-center justify-center text-[8px] text-white">C++</div>
+</div>
+<button class="bg-[#007acc] text-white px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Solve</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-[#252526] border border-[#333333] p-5 flex flex-col justify-between hover:bg-[#2a2d2e] transition-all duration-200 group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="bg-[#2d2d2d] text-tertiary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">Medium</span>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-[#007acc] transition-colors" data-icon="functions">functions</span>
+</div>
+<h2 class="font-h2 text-h2 text-white mb-2">Fibonacci Sequence</h2>
+<p class="font-body-main text-body-main text-zinc-400 line-clamp-2">Calculate the N-th Fibonacci number using dynamic programming to optimize time complexity.</p>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="text-zinc-500 text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="timer">timer</span>
+                                15 min
+                            </div>
+<button class="bg-[#007acc] text-white px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Solve</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-[#252526] border border-[#333333] p-5 flex flex-col justify-between hover:bg-[#2a2d2e] transition-all duration-200 group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="bg-[#2d2d2d] text-primary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">Easy</span>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-[#007acc] transition-colors" data-icon="text_fields">text_fields</span>
+</div>
+<h2 class="font-h2 text-h2 text-white mb-2">Palindrome Checker</h2>
+<p class="font-body-main text-body-main text-zinc-400 line-clamp-2">Verify if a given string is a palindrome while ignoring spaces and special characters.</p>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="text-zinc-500 text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                                85% success
+                            </div>
+<button class="bg-[#007acc] text-white px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Solve</button>
+</div>
+</div>
+<!-- Card 4 (Large Feature Card) -->
+<div class="bg-[#252526] border border-[#333333] p-5 flex flex-col md:col-span-2 justify-between hover:bg-[#2a2d2e] transition-all duration-200 group relative overflow-hidden">
+<div class="absolute right-0 top-0 opacity-10 pointer-events-none p-4">
+<span class="material-symbols-outlined text-[120px]" data-icon="psychology">psychology</span>
+</div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-[#2d2d2d] text-error px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">Hard</span>
+<span class="bg-[#007acc] text-white text-[9px] px-1.5 py-0.5 rounded font-bold uppercase">Weekly Challenge</span>
+</div>
+<h2 class="font-h2 text-h2 text-white mb-2">Graph Shortest Path</h2>
+<p class="font-body-main text-body-main text-zinc-400 max-w-lg mb-4">Master Dijkstra's algorithm to find the most efficient route through a weighted network topology. Perfect for understanding network routing protocols.</p>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="text-xs text-zinc-400">Memory Intensive</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-xs text-zinc-400">Data Structures</span>
+</div>
+</div>
+</div>
+<div class="mt-6 flex items-center justify-between relative z-10">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full border border-[#333333] bg-[#1e1e1e] flex items-center justify-center">
+<span class="material-symbols-outlined text-sm text-zinc-400" data-icon="military_tech">military_tech</span>
+</div>
+<span class="text-xs font-mono text-primary">+500 Points</span>
+</div>
+<button class="bg-[#007acc] text-white px-6 py-2 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Start Challenge</button>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="bg-[#252526] border border-[#333333] p-5 flex flex-col justify-between hover:bg-[#2a2d2e] transition-all duration-200 group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="bg-[#2d2d2d] text-tertiary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">Medium</span>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-[#007acc] transition-colors" data-icon="grid_view">grid_view</span>
+</div>
+<h2 class="font-h2 text-h2 text-white mb-2">Matrix Rotation</h2>
+<p class="font-body-main text-body-main text-zinc-400 line-clamp-2">Rotate an N x N 2D matrix by 90 degrees in-place without using extra space.</p>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<span class="text-zinc-500 text-xs">243 Solved</span>
+<button class="bg-[#007acc] text-white px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Solve</button>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="bg-[#252526] border border-[#333333] p-5 flex flex-col justify-between hover:bg-[#2a2d2e] transition-all duration-200 group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="bg-[#2d2d2d] text-primary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">Easy</span>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-[#007acc] transition-colors" data-icon="account_tree">account_tree</span>
+</div>
+<h2 class="font-h2 text-h2 text-white mb-2">Binary Tree Depth</h2>
+<p class="font-body-main text-body-main text-zinc-400 line-clamp-2">Write a recursive algorithm to find the maximum depth of a binary tree structure.</p>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="text-zinc-500 text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="stars">stars</span>
+                                New Problem
+                            </div>
+<button class="bg-[#007acc] text-white px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Solve</button>
+</div>
+</div>
+<!-- Card 7 -->
+<div class="bg-[#252526] border border-[#333333] p-5 flex flex-col justify-between hover:bg-[#2a2d2e] transition-all duration-200 group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="bg-[#2d2d2d] text-tertiary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">Medium</span>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-[#007acc] transition-colors" data-icon="storage">storage</span>
+</div>
+<h2 class="font-h2 text-h2 text-white mb-2">Stack Implementation</h2>
+<p class="font-body-main text-body-main text-zinc-400 line-clamp-2">Build a stack with min() function that operates in O(1) time complexity.</p>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<span class="text-zinc-500 text-xs">Recommended</span>
+<button class="bg-[#007acc] text-white px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Solve</button>
+</div>
+</div>
+<!-- Card 8 -->
+<div class="bg-[#252526] border border-[#333333] p-5 flex flex-col justify-between hover:bg-[#2a2d2e] transition-all duration-200 group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="bg-[#2d2d2d] text-error px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">Hard</span>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-[#007acc] transition-colors" data-icon="search">search</span>
+</div>
+<h2 class="font-h2 text-h2 text-white mb-2">Regex Engine</h2>
+<p class="font-body-main text-body-main text-zinc-400 line-clamp-2">Implement a simple regular expression matcher that supports '.' and '*'.</p>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="text-zinc-500 text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+                                Top Pick
+                            </div>
+<button class="bg-[#007acc] text-white px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Solve</button>
+</div>
+</div>
+</div>
+<!-- Code Editor Mockup for Decoration -->
+<div class="mt-12 bg-[#252526] border border-[#333333] rounded-lg overflow-hidden">
+<div class="bg-[#333333] px-4 py-2 flex items-center gap-2">
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+<div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+<div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+</div>
+<span class="ml-4 text-xs font-mono text-zinc-400">solution.py</span>
+</div>
+<div class="flex font-body-mono text-body-mono p-4">
+<div class="text-zinc-600 pr-4 border-r border-[#333333] select-none text-right w-10">
+                            1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7
+                        </div>
+<div class="pl-4 flex-1">
+<span class="text-[#c586c0]">def</span> <span class="text-[#dcdcaa]">solve_problem</span>(n):<br/>
+                                <span class="text-[#6a9955]"># Initialize dynamic programming array</span><br/>
+                                dp = [<span class="text-[#b5cea8]">0</span>] * (n + <span class="text-[#b5cea8]">1</span>)<br/>
+                                <span class="text-[#c586c0]">for</span> i <span class="text-[#c586c0]">in</span> <span class="text-[#dcdcaa]">range</span>(<span class="text-[#b5cea8]">2</span>, n + <span class="text-[#b5cea8]">1</span>):<br/>
+                                    dp[i] = dp[i-<span class="text-[#b5cea8]">1</span>] + dp[i-<span class="text-[#b5cea8]">2</span>]<br/>
+                                <span class="text-[#c586c0]">return</span> dp[n]<br/>
+<span class="bg-[#2a2d2e] w-full block">|</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom NavBar (Visible only on small screens) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-zinc-900 border-t border-[#333333] flex justify-around items-center z-50">
+<button class="flex flex-col items-center gap-1 text-[#007acc]">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold">DASHBOARD</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined" data-icon="code">code</span>
+<span class="text-[10px] font-bold">SOLVE</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined" data-icon="emoji_events">emoji_events</span>
+<span class="text-[10px] font-bold">LEADERBOARD</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-bold">PROFILE</span>
+</button>
+</div>
+</body></html>

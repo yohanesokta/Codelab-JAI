@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CodeLab TA Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Space+Grotesk:wght@400&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#101419",
+                        "on-tertiary-fixed": "#301400",
+                        "primary-container": "#007acc",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#9fcaff",
+                        "on-tertiary-container": "#ffffff",
+                        "inverse-on-surface": "#2d3136",
+                        "surface-container": "#1c2025",
+                        "on-primary-fixed": "#001d36",
+                        "surface-container-high": "#272a30",
+                        "tertiary": "#ffb784",
+                        "on-tertiary-container": "#ffffff",
+                        "on-primary-container": "#ffffff",
+                        "on-secondary-container": "#b6b4b5",
+                        "secondary-fixed-dim": "#c8c6c7",
+                        "error": "#ffb4ab",
+                        "background": "#101419",
+                        "on-secondary-fixed": "#1b1b1c",
+                        "surface-variant": "#31353b",
+                        "surface-tint": "#9fcaff",
+                        "primary-fixed": "#d1e4ff",
+                        "on-background": "#e0e2ea",
+                        "on-surface": "#e0e2ea",
+                        "outline": "#8a919d",
+                        "surface-container-low": "#181c21",
+                        "secondary": "#c8c6c7",
+                        "surface-container-highest": "#31353b",
+                        "error-container": "#93000a",
+                        "inverse-surface": "#e0e2ea",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "secondary-fixed": "#e4e2e3",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#c0c7d3",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-bright": "#36393f",
+                        "on-secondary-fixed-variant": "#474648",
+                        "on-primary": "#003258",
+                        "inverse-primary": "#0061a4",
+                        "primary": "#9fcaff",
+                        "outline-variant": "#404751",
+                        "surface-container-lowest": "#0b0e13",
+                        "on-secondary": "#303031",
+                        "secondary-container": "#474648",
+                        "surface": "#101419",
+                        "on-tertiary": "#4f2500",
+                        "on-tertiary-fixed-variant": "#713700"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "48px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "unit": "4px",
+                        "lg": "24px",
+                        "gutter": "1px",
+                        "sidebar-width": "260px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "body-main": ["Inter"],
+                        "caption": ["Inter"],
+                        "h2": ["Inter"],
+                        "body-mono": ["Space Grotesk"],
+                        "h1": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-main": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "h2": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-mono": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #1e1e1e;
+        }
+    </style>
+</head>
+<body class="font-body-main text-on-surface selection:bg-primary-container selection:text-white">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-12 w-full px-4 sticky top-0 z-50 bg-zinc-900 dark:bg-[#1e1e1e] border-b border-[#333333] font-['Inter'] antialiased text-sm tracking-tight">
+<div class="flex items-center gap-6">
+<span class="text-lg font-bold text-white tracking-tighter">CodeLab</span>
+<nav class="hidden md:flex h-12 items-center gap-4">
+<a class="text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer active:opacity-80" href="#">Dashboard</a>
+<a class="text-white border-b-2 border-[#007acc] h-full flex items-center px-1 cursor-pointer active:opacity-80" href="#">Problems</a>
+<a class="text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer active:opacity-80" href="#">Submissions</a>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-zinc-400 hover:bg-[#2d2d2d] transition-all duration-150 rounded cursor-pointer">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-zinc-400 hover:bg-[#2d2d2d] transition-all duration-150 rounded cursor-pointer">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</button>
+<button class="p-2 text-zinc-400 hover:bg-[#2d2d2d] transition-all duration-150 rounded cursor-pointer">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-[#333333] ml-2">
+<img alt="User profile avatar" data-alt="Close up professional portrait of a software engineer with glasses in a minimalist dark background studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa62Zw0-65x9N8XcN0140V8177n9XKrinBRc0Eb9P79awCuP-CqZggfLhVAsKM3Bw3I0fe4QpFDTPrlxMtsf9zG6ZiuuV60lfMuDrpt3enTjIZ2BFpmoP_NsQ045blHiiC4LD5Z3QnHbQMmJqKaNdQtnFQXVFmi2eQbWMZ_wLx4FQ-FTN2-IYSdPLgaugEjVKhLp7e3mBxu_vjNM6_80pmIr73FrcBcKTnRwwGgXwc6pGvIWkyOSjl9xBByH_dIKedMU--7pQgMzc"/>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-12 h-[calc(100vh-48px)] w-64 bg-zinc-800 dark:bg-[#252526] border-r border-[#333333] flex flex-col hidden lg:flex">
+<div class="p-4 border-b border-[#333333]">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-6 h-6 bg-primary-container rounded flex items-center justify-center text-[10px] text-white font-bold">CS</div>
+<div>
+<p class="font-['Inter'] uppercase text-[11px] font-semibold tracking-wider text-white">WORKSPACE</p>
+<p class="text-[10px] text-zinc-500 uppercase tracking-widest">CS101 - Practical</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-2">
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="font-label-caps text-label-caps">Explorer</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+<span class="font-label-caps text-label-caps">Run &amp; Debug</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-[#333333] py-2">
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-caps text-label-caps uppercase">Account</span>
+</a>
+<a class="text-zinc-500 flex items-center px-4 py-3 gap-3 hover:bg-[#2a2d2e] hover:text-zinc-200 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps uppercase">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 lg:ml-64 p-6 bg-[#1e1e1e] min-h-screen">
+<!-- Header Section -->
+<div class="flex justify-between items-center mb-8">
+<div>
+<h1 class="font-h1 text-h1 text-white mb-1">Current Problems</h1>
+<p class="font-caption text-caption text-zinc-500">Managing 12 active programming assignments for CS101</p>
+</div>
+<button class="bg-[#007acc] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#0062a3] transition-colors active:opacity-80 font-body-main text-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                    Create New Problem
+                </button>
+</div>
+<!-- Dashboard Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-[#252526] border border-[#333333] p-4 rounded">
+<p class="font-label-caps text-label-caps text-zinc-500 mb-2">TOTAL SUBMISSIONS</p>
+<p class="font-h2 text-h2 text-white">1,284</p>
+<div class="mt-2 h-1 w-full bg-zinc-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 75%"></div>
+</div>
+</div>
+<div class="bg-[#252526] border border-[#333333] p-4 rounded">
+<p class="font-label-caps text-label-caps text-zinc-500 mb-2">AVG. SUCCESS RATE</p>
+<p class="font-h2 text-h2 text-tertiary">64.2%</p>
+<div class="mt-2 h-1 w-full bg-zinc-700 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container" style="width: 64%"></div>
+</div>
+</div>
+<div class="bg-[#252526] border border-[#333333] p-4 rounded">
+<p class="font-label-caps text-label-caps text-zinc-500 mb-2">ACTIVE STUDENTS</p>
+<p class="font-h2 text-h2 text-white">156</p>
+<div class="mt-2 h-1 w-full bg-zinc-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 90%"></div>
+</div>
+</div>
+<div class="bg-[#252526] border border-[#333333] p-4 rounded">
+<p class="font-label-caps text-label-caps text-zinc-500 mb-2">UNGRADED</p>
+<p class="font-h2 text-h2 text-error">42</p>
+<div class="mt-2 h-1 w-full bg-zinc-700 rounded-full overflow-hidden">
+<div class="h-full bg-error-container" style="width: 42%"></div>
+</div>
+</div>
+</div>
+<!-- Problems Table -->
+<div class="bg-[#252526] border border-[#333333] rounded overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-[#252526] border-b border-[#333333]">
+<tr>
+<th class="px-6 py-4 font-label-caps text-label-caps text-zinc-400 uppercase tracking-widest">ID</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-zinc-400 uppercase tracking-widest">Problem Name</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-zinc-400 uppercase tracking-widest">Difficulty</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-zinc-400 uppercase tracking-widest">Deadline</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-zinc-400 uppercase tracking-widest">Submissions</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-zinc-400 uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#333333]">
+<!-- Row 1 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group">
+<td class="px-6 py-4 font-body-mono text-body-mono text-zinc-500">#CS101-01</td>
+<td class="px-6 py-4 font-body-main text-body-main text-white font-semibold">Array Summation Challenge</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-900/30 text-green-400 border border-green-800/50 uppercase tracking-tighter">Easy</span>
+</td>
+<td class="px-6 py-4 font-caption text-caption text-zinc-400">Oct 24, 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 85%"></div>
+</div>
+<span class="font-body-mono text-[11px] text-zinc-400">142/156</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 text-zinc-500 hover:text-primary-fixed hover:bg-[#2d2d2d] rounded transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-1.5 text-zinc-500 hover:text-error hover:bg-[#2d2d2d] rounded transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group">
+<td class="px-6 py-4 font-body-mono text-body-mono text-zinc-500">#CS101-02</td>
+<td class="px-6 py-4 font-body-main text-body-main text-white font-semibold">Binary Search Implementation</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-900/30 text-amber-400 border border-amber-800/50 uppercase tracking-tighter">Medium</span>
+</td>
+<td class="px-6 py-4 font-caption text-caption text-zinc-400">Oct 30, 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 42%"></div>
+</div>
+<span class="font-body-mono text-[11px] text-zinc-400">65/156</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 text-zinc-500 hover:text-primary-fixed hover:bg-[#2d2d2d] rounded transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-1.5 text-zinc-500 hover:text-error hover:bg-[#2d2d2d] rounded transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group">
+<td class="px-6 py-4 font-body-mono text-body-mono text-zinc-500">#CS101-03</td>
+<td class="px-6 py-4 font-body-main text-body-main text-white font-semibold">Dijkstra's Shortest Path</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-900/30 text-red-400 border border-red-800/50 uppercase tracking-tighter">Hard</span>
+</td>
+<td class="px-6 py-4 font-caption text-caption text-zinc-400">Nov 05, 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 12%"></div>
+</div>
+<span class="font-body-mono text-[11px] text-zinc-400">18/156</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 text-zinc-500 hover:text-primary-fixed hover:bg-[#2d2d2d] rounded transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-1.5 text-zinc-500 hover:text-error hover:bg-[#2d2d2d] rounded transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-[#2a2d2e] transition-colors group">
+<td class="px-6 py-4 font-body-mono text-body-mono text-zinc-500">#CS101-04</td>
+<td class="px-6 py-4 font-body-main text-body-main text-white font-semibold">Memory Management Lab</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-900/30 text-amber-400 border border-amber-800/50 uppercase tracking-tighter">Medium</span>
+</td>
+<td class="px-6 py-4 font-caption text-caption text-zinc-400">Nov 12, 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 0%"></div>
+</div>
+<span class="font-body-mono text-[11px] text-zinc-400">0/156</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 text-zinc-500 hover:text-primary-fixed hover:bg-[#2d2d2d] rounded transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-1.5 text-zinc-500 hover:text-error hover:bg-[#2d2d2d] rounded transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Editor Preview Panel (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+<div class="md:col-span-2 bg-[#252526] border border-[#333333] rounded overflow-hidden flex flex-col h-[400px]">
+<div class="bg-[#1e1e1e] border-b border-[#333333] px-4 py-2 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-400 text-sm" data-icon="javascript">javascript</span>
+<span class="font-body-mono text-xs text-zinc-400">starter_code.js</span>
+</div>
+<div class="flex gap-1.5">
+<div class="w-2 h-2 rounded-full bg-zinc-700"></div>
+<div class="w-2 h-2 rounded-full bg-zinc-700"></div>
+<div class="w-2 h-2 rounded-full bg-zinc-700"></div>
+</div>
+</div>
+<div class="flex-1 flex font-body-mono text-body-mono">
+<div class="w-10 bg-[#1e1e1e] border-r border-[#333333] py-4 text-zinc-600 text-right pr-2 select-none leading-5">
+                            1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11
+                        </div>
+<div class="flex-1 p-4 bg-[#1e1e1e] text-zinc-300 leading-5 whitespace-pre overflow-hidden">
+<span class="text-[#007acc]">function</span> <span class="text-[#dcdcaa]">calculateSum</span>(arr) {
+  <span class="text-[#007acc]">let</span> total = <span class="text-[#b5cea8]">0</span>;
+  
+  <span class="text-[#6a9955]">/* Implement the summation logic here */</span>
+<span class="text-[#c586c0]">for</span> (<span class="text-[#007acc]">let</span> i = <span class="text-[#b5cea8]">0</span>; i &lt; arr.length; i++) {
+    total += arr[i];
+  }
+
+  <span class="text-[#c586c0]">return</span> total;
+}
+
+<span class="text-[#007acc]">module</span>.<span class="text-[#007acc]">exports</span> = calculateSum;</div>
+</div>
+</div>
+<div class="bg-[#252526] border border-[#333333] rounded p-6 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary-container" data-icon="info">info</span>
+<h3 class="font-h2 text-h2 text-white">Problem Insights</h3>
+</div>
+<p class="font-body-main text-body-main text-zinc-400 mb-6">
+                            "Array Summation Challenge" has been the most attempted problem this week with a completion time average of 14 minutes.
+                        </p>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-zinc-500">Peak Hours</span>
+<span class="text-white">6:00 PM - 9:00 PM</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-zinc-500">Most Used Lang</span>
+<span class="text-white">Python 3.10</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-zinc-500">Common Error</span>
+<span class="text-white">IndexOutOfBounds</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-[#333333] text-zinc-400 hover:bg-[#2d2d2d] hover:text-white rounded transition-colors font-label-caps text-label-caps uppercase">View Full Report</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-zinc-900 border-t border-[#333333] flex justify-around items-center h-16 z-50">
+<a class="flex flex-col items-center gap-1 text-zinc-500" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px]">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary-container" href="#">
+<span class="material-symbols-outlined" data-icon="assignment" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="text-[10px]">Problems</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-500" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-[10px]">Submissions</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-500" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px]">Profile</span>
+</a>
+</nav>
+</body></html>
