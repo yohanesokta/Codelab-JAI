@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Coding Assignment Platform
 
-## Getting Started
+A lightweight fullstack Next.js application for a coding assignment portal, utilizing MariaDB and Drizzle ORM. The code execution engine runs directly inside the Next.js Docker container using Python. Everything is containerized and runs via Docker Compose.
 
-First, run the development server:
+## How to Run (Docker)
+
+To run the application and the database:
+
+1. Ensure you have [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) installed on your system.
+2. In the root of the project, run:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up -d --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This will build and start the following services:
+- **db**: MariaDB database (port 3306)
+- **app**: Next.js Web Application & API (port 3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Database Migrations
+When starting the `app` container, you might need to run the initial database migrations. Since the Dockerfile is currently set up to just start the application, you can run migrations locally using:
+```bash
+pnpm install
+npx drizzle-kit push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Local Development
 
-## Learn More
+If you just want to run the database via Docker and the Next.js app locally for active development:
 
-To learn more about Next.js, take a look at the following resources:
+1. Start only the database:
+```bash
+docker compose up -d db
+```
+2. Install Node.js dependencies:
+```bash
+pnpm install
+```
+3. Run Drizzle migrations to configure the database schema:
+```bash
+npx drizzle-kit push
+```
+4. Start the development server:
+```bash
+pnpm dev
+```
+5. Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Note:** For local development without Docker, your local machine must have `python3` installed to evaluate coding submissions correctly, since it relies on Node's `child_process.spawn('python3')`.

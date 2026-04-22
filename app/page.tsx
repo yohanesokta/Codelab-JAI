@@ -1,65 +1,83 @@
-import Image from "next/image";
+import { getProblems } from "@/app/actions/problem";
+import Link from "next/link";
+import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const problems = await getProblems();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <Header />
+      <div className="flex min-h-[calc(100vh-48px)]">
+        <Sidebar className="hidden md:flex" />
+        {/* Main Content Canvas */}
+        <main className="flex-1 md:ml-64 p-6 bg-[#1e1e1e]">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="font-h1 text-h1 text-white mb-1">Available Problems</h1>
+                <p className="font-caption text-caption text-zinc-500">Solve challenges and master your programming skills.</p>
+              </div>
+              <div className="flex gap-2">
+                <button className="bg-[#252526] text-zinc-300 px-3 py-1.5 rounded border border-[#333333] text-sm hover:bg-[#2d2d2d] transition-colors flex items-center gap-2">
+                  <span className="material-symbols-outlined text-xs">filter_list</span>
+                  Filter
+                </button>
+              </div>
+            </div>
+
+            {/* Bento Grid for Problem Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {problems.length === 0 ? (
+                <div className="col-span-full py-12 text-center text-zinc-500">
+                  No problems available yet. Check back later!
+                </div>
+              ) : (
+                problems.map((problem, index) => (
+                  <div key={problem.id} className="bg-[#252526] border border-[#333333] p-5 flex flex-col justify-between hover:bg-[#2a2d2e] transition-all duration-200 group">
+                    <div>
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="bg-[#2d2d2d] text-primary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border border-[#333333]">
+                          Challenge
+                        </span>
+                        <span className="material-symbols-outlined text-zinc-600 group-hover:text-[#007acc] transition-colors">
+                          code
+                        </span>
+                      </div>
+                      <h2 className="font-h2 text-h2 text-white mb-2">{problem.title}</h2>
+                      <p className="font-body-main text-body-main text-zinc-400 line-clamp-2">
+                        {problem.description}
+                      </p>
+                    </div>
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="text-zinc-500 text-xs flex items-center gap-1">
+                        P{problem.id}
+                      </div>
+                      <Link
+                        href={`/problem/${problem.id}`}
+                        className="bg-[#007acc] text-white px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 active:scale-95 transition-all text-center"
+                      >
+                        Solve
+                      </Link>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Mobile Bottom NavBar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-zinc-900 border-t border-[#333333] flex justify-around items-center z-50">
+        <button className="flex flex-col items-center gap-1 text-[#007acc]">
+          <span className="material-symbols-outlined">dashboard</span>
+          <span className="text-[10px] font-bold">DASHBOARD</span>
+        </button>
+      </div>
+    </>
   );
 }
