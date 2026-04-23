@@ -12,6 +12,7 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "drizzle-orm": "^0.45.2",
     "mysql2": "^3.22.2",
     "next": "16.2.4",

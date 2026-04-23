@@ -18,6 +18,7 @@ export default function NewProblem() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [duration, setDuration] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
   const [testCases, setTestCases] = useState<TestCase[]>([{ type: 'standard', input: "", expectedOutput: "" }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -47,6 +48,7 @@ export default function NewProblem() {
         startTime: startTime || null,
         endTime: endTime || null,
         duration: duration ? parseInt(duration) : null,
+        isPublic,
         testCases 
       });
       if (res.success) {
@@ -133,6 +135,28 @@ export default function NewProblem() {
                 />
               </div>
             </div>
+          </section>
+
+          {/* Visibility Info */}
+          <section className="space-y-6">
+            <h2 className="text-xl font-bold text-white border-b border-[#333333] pb-2">Visibility</h2>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setIsPublic(true)}
+                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${isPublic ? 'bg-[#007acc]/20 border-[#007acc] text-[#007acc]' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+              >
+                Public (Visible on Home)
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsPublic(false)}
+                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${!isPublic ? 'bg-orange-900/20 border-orange-600 text-orange-400' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+              >
+                Private (URL Only)
+              </button>
+            </div>
+            <p className="text-[10px] text-zinc-600 italic">Private challenges will not appear in the public list but can still be accessed via their specific ID link.</p>
           </section>
 
           {/* Test Cases */}

@@ -1,8 +1,9 @@
-import { getProblems } from "@/app/actions/problem";
+import { getAllProblemsAdmin } from "@/app/actions/problem";
 import { getSubmissions } from "@/app/actions/submission";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import SubmissionsList from "./SubmissionsList";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +16,7 @@ export default async function AdminDashboard() {
   }
 
   const [problems, submissions] = await Promise.all([
-    getProblems(),
+    getAllProblemsAdmin(),
     getSubmissions()
   ]);
 
@@ -48,7 +49,12 @@ export default async function AdminDashboard() {
                 problems.map(p => (
                   <div key={p.id} className="flex justify-between items-center p-4 bg-[#1e1e1e] border border-[#333333] rounded">
                     <div className="flex flex-col gap-1">
-                      <h3 className="text-white font-bold">{p.title}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-white font-bold">{p.title}</h3>
+                        {!p.isPublic && (
+                          <span className="text-[9px] bg-orange-900/40 text-orange-400 px-1.5 py-0.5 rounded border border-orange-900/50 font-bold uppercase tracking-wider">Private</span>
+                        )}
+                      </div>
                       <div className="flex gap-4 text-[10px] uppercase font-bold text-zinc-500">
                         <span>ID: {p.id}</span>
                         {p.startTime && <span>Start: {new Date(p.startTime).toLocaleString()}</span>}
@@ -62,44 +68,8 @@ export default async function AdminDashboard() {
             </div>
           </div>
 
-          {/* Submissions List */}
-          <div className="bg-[#252526] border border-[#333333] rounded-lg p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Recent Submissions</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-[#333333] text-zinc-500 text-sm">
-                    <th className="pb-3 font-semibold">NIM</th>
-                    <th className="pb-3 font-semibold">Problem</th>
-                    <th className="pb-3 font-semibold">Status</th>
-                    <th className="pb-3 font-semibold">Time</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#333333]">
-                  {submissions.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="py-4 text-center text-zinc-500">No submissions yet.</td>
-                    </tr>
-                  ) : (
-                    submissions.map(s => (
-                      <tr key={s.id} className="text-zinc-300">
-                        <td className="py-3 font-mono text-sm">{s.nim}</td>
-                        <td className="py-3">{s.problemTitle || s.problemId}</td>
-                        <td className="py-3">
-                          <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${s.status === 'pass' ? 'bg-green-900/40 text-green-400' : 'bg-red-900/40 text-red-500'}`}>
-                            {s.status}
-                          </span>
-                        </td>
-                        <td className="py-3 text-sm text-zinc-500">
-                          {new Date(s.createdAt).toLocaleTimeString()}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          {/* Submissions List Component */}
+          <SubmissionsList submissions={submissions} />
         </div>
       </div>
     </div>

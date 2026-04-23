@@ -6,6 +6,10 @@ import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 export async function getProblems() {
+  return await db.select().from(problems).where(eq(problems.isPublic, true)).orderBy(problems.createdAt);
+}
+
+export async function getAllProblemsAdmin() {
   return await db.select().from(problems).orderBy(problems.createdAt);
 }
 
@@ -27,6 +31,7 @@ export async function createProblem(data: {
   startTime?: string | null;
   endTime?: string | null;
   duration?: number | null;
+  isPublic?: boolean;
   testCases: { 
     type: string;
     input?: string; 
@@ -41,6 +46,7 @@ export async function createProblem(data: {
       startTime: data.startTime ? new Date(data.startTime) : null,
       endTime: data.endTime ? new Date(data.endTime) : null,
       duration: data.duration,
+      isPublic: data.isPublic ?? true,
     });
     
     const insertedId = (result as any).insertId;

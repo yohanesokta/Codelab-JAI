@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { submitCode, runTests, runCode, stopCode } from "@/app/actions/submission";
 import { useRouter } from "next/navigation";
 import Timer from "../../components/Timer";
+import Editor from '@monaco-editor/react';
 
 interface EditorClientProps {
   problemId: number;
@@ -51,22 +52,6 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
       return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     }
   }, [isLocked]);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const target = e.target as HTMLTextAreaElement;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      
-      const newCode = code.substring(0, start) + "    " + code.substring(end);
-      setCode(newCode);
-      
-      setTimeout(() => {
-        target.selectionStart = target.selectionEnd = start + 4;
-      }, 0);
-    }
-  };
 
   const handleStartChallenge = () => {
     if (!tempNim.trim()) {
@@ -258,14 +243,23 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
       
       {/* Editor & Results Area */}
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1 relative">
-          <textarea 
+        <div className="flex-1 relative overflow-hidden">
+          <Editor
+            height="100%"
+            defaultLanguage="python"
+            theme="vs-dark"
             value={code}
-            onChange={(e) => setCode(e.target.value)}
-            onKeyDown={handleKeyDown}
-            readOnly={isRunningTests || isSubmitting || isExecuting}
-            className="absolute inset-0 w-full h-full bg-[#1e1e1e] text-[#d4d4d4] p-6 font-mono text-sm resize-none focus:outline-none custom-scrollbar"
-            spellCheck="false"
+            onChange={(value) => setCode(value || "")}
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              automaticLayout: true,
+              scrollBeyondLastLine: false,
+              readOnly: isRunningTests || isSubmitting || isExecuting,
+              padding: { top: 16, bottom: 16 },
+              fontFamily: "'Fira Code', 'Courier New', monospace",
+              fontLigatures: true,
+            }}
           />
         </div>
 
