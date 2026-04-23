@@ -4,8 +4,9 @@ import Sidebar from "../../components/Sidebar";
 import { notFound } from "next/navigation";
 import EditorClient from "./EditorClient";
 
-export default async function ProblemPage({ params }: { params: { id: string } }) {
-  const problem = await getProblemById(parseInt(params.id));
+export default async function ProblemPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const problem = await getProblemById(parseInt(id));
 
   if (!problem) {
     notFound();
@@ -54,7 +55,7 @@ export default async function ProblemPage({ params }: { params: { id: string } }
             </div>
 
             <div className="flex-1 bg-[#1e1e1e] flex flex-col h-full min-h-[500px]">
-              <EditorClient problemId={problem.id} />
+              <EditorClient problemId={problem.id} endTime={problem.endTime} duration={problem.duration} />
             </div>
           </div>
         </main>

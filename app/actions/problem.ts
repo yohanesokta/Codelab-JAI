@@ -21,22 +21,38 @@ export async function getProblemById(id: number) {
   };
 }
 
-export async function createProblem(data: { title: string; description: string; testCases: { input: string; expectedOutput: string }[] }) {
+export async function createProblem(data: { 
+  title: string; 
+  description: string; 
+  startTime?: string | null;
+  endTime?: string | null;
+  duration?: number | null;
+  testCases: { 
+    type: string;
+    input?: string; 
+    expectedOutput?: string;
+    testScript?: string;
+  }[] 
+}) {
   try {
     const [result] = await db.insert(problems).values({
       title: data.title,
       description: data.description,
+      startTime: data.startTime ? new Date(data.startTime) : null,
+      endTime: data.endTime ? new Date(data.endTime) : null,
+      duration: data.duration,
     });
     
-    // MySQL returns insertedId on insert
     const insertedId = (result as any).insertId;
     
     if (data.testCases && data.testCases.length > 0) {
       await db.insert(testCases).values(
         data.testCases.map(tc => ({
           problemId: insertedId,
-          input: tc.input,
-          expectedOutput: tc.expectedOutput,
+          type: tc.type,
+          input: tc.input || null,
+          expectedOutput: tc.expectedOutput || null,
+          testScript: tc.testScript || null,
         }))
       );
     }

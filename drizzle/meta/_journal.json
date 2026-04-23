@@ -8,6 +8,13 @@
       "when": 1776899013600,
       "tag": "0000_elite_roland_deschain",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1776903056908,
+      "tag": "0001_equal_satana",
+      "breakpoints": true
     }
   ]
 }

@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx db/migrate.ts",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
@@ -16,16 +19,16 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/node": "^20.19.39",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
-    "eslint": "^9",
+    "eslint": "^9.39.4",
     "eslint-config-next": "16.2.4",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.2.4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }

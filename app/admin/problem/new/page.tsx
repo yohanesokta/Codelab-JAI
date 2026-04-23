@@ -5,20 +5,30 @@ import { createProblem } from "@/app/actions/problem";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+interface TestCase {
+  type: 'standard' | 'script';
+  input?: string;
+  expectedOutput?: string;
+  testScript?: string;
+}
+
 export default function NewProblem() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [testCases, setTestCases] = useState([{ input: "", expectedOutput: "" }]);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [duration, setDuration] = useState("");
+  const [testCases, setTestCases] = useState<TestCase[]>([{ type: 'standard', input: "", expectedOutput: "" }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const handleAddTestCase = () => {
-    setTestCases([...testCases, { input: "", expectedOutput: "" }]);
+    setTestCases([...testCases, { type: 'standard', input: "", expectedOutput: "" }]);
   };
 
-  const handleTestCaseChange = (index: number, field: 'input' | 'expectedOutput', value: string) => {
+  const handleTestCaseChange = (index: number, field: keyof TestCase, value: string) => {
     const newTestCases = [...testCases];
-    newTestCases[index][field] = value;
+    (newTestCases[index] as any)[field] = value;
     setTestCases(newTestCases);
   };
 
@@ -31,7 +41,14 @@ export default function NewProblem() {
     setIsSubmitting(true);
     
     try {
-      const res = await createProblem({ title, description, testCases });
+      const res = await createProblem({ 
+        title, 
+        description, 
+        startTime: startTime || null,
+        endTime: endTime || null,
+        duration: duration ? parseInt(duration) : null,
+        testCases 
+      });
       if (res.success) {
         router.push("/admin/dashboard");
       } else {
@@ -54,94 +71,170 @@ export default function NewProblem() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-[#252526] border border-[#333333] rounded-lg p-6 space-y-6">
-          <div>
-            <label className="block text-white font-bold mb-2">Problem Title</label>
-            <input 
-              required
-              type="text" 
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
-              placeholder="e.g. Array Manipulation"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="bg-[#252526] border border-[#333333] rounded-lg p-6 space-y-8 shadow-xl">
+          {/* Basic Info */}
+          <section className="space-y-6">
+            <h2 className="text-xl font-bold text-white border-b border-[#333333] pb-2">Problem Info</h2>
+            <div>
+              <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Title</label>
+              <input 
+                required
+                type="text" 
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                placeholder="e.g. Array Manipulation"
+              />
+            </div>
 
-          <div>
-            <label className="block text-white font-bold mb-2">Description</label>
-            <textarea 
-              required
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={5}
-              className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
-              placeholder="Describe the problem, input format, output format..."
-            />
-          </div>
+            <div>
+              <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Description / Instructions</label>
+              <textarea 
+                required
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={5}
+                className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                placeholder="Describe the problem..."
+              />
+            </div>
+          </section>
 
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <label className="block text-white font-bold">Test Cases</label>
+          {/* Timing Info */}
+          <section className="space-y-6">
+            <h2 className="text-xl font-bold text-white border-b border-[#333333] pb-2">Timing & Scheduling</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Start Time</label>
+                <input 
+                  type="datetime-local" 
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                />
+              </div>
+              <div>
+                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">End Time</label>
+                <input 
+                  type="datetime-local" 
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                />
+              </div>
+              <div>
+                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Duration (Minutes)</label>
+                <input 
+                  type="number" 
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                  placeholder="e.g. 60"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Test Cases */}
+          <section className="space-y-6">
+            <div className="flex justify-between items-center border-b border-[#333333] pb-2">
+              <h2 className="text-xl font-bold text-white">Test Cases</h2>
               <button 
                 type="button"
                 onClick={handleAddTestCase}
-                className="text-sm bg-[#333333] hover:bg-[#444444] text-white px-3 py-1 rounded"
+                className="bg-[#007acc] hover:bg-[#005f9e] text-white text-xs font-bold px-4 py-2 rounded transition-colors"
               >
                 + Add Test Case
               </button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               {testCases.map((tc, index) => (
-                <div key={index} className="bg-[#1e1e1e] border border-[#333333] rounded p-4 relative">
-                  <div className="absolute top-2 right-2 flex items-center">
+                <div key={index} className="bg-[#1e1e1e] border border-[#333333] rounded-lg p-6 relative shadow-inner">
+                  <div className="absolute top-4 right-4">
                     {testCases.length > 1 && (
                       <button 
                         type="button"
                         onClick={() => handleRemoveTestCase(index)}
-                        className="text-red-500 hover:text-red-400"
+                        className="text-red-500 hover:text-red-400 transition-colors"
                       >
                         <span className="material-symbols-outlined text-sm">delete</span>
                       </button>
                     )}
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs uppercase text-zinc-500 font-bold mb-1">Input</label>
-                      <textarea 
-                        required
-                        value={tc.input}
-                        onChange={(e) => handleTestCaseChange(index, 'input', e.target.value)}
-                        rows={3}
-                        className="w-full bg-[#252526] border border-[#333333] text-white rounded p-2 text-sm font-mono focus:outline-none focus:border-[#007acc]"
-                        placeholder="e.g. 5\n1 2 3 4 5"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs uppercase text-zinc-500 font-bold mb-1">Expected Output</label>
-                      <textarea 
-                        required
-                        value={tc.expectedOutput}
-                        onChange={(e) => handleTestCaseChange(index, 'expectedOutput', e.target.value)}
-                        rows={3}
-                        className="w-full bg-[#252526] border border-[#333333] text-white rounded p-2 text-sm font-mono focus:outline-none focus:border-[#007acc]"
-                        placeholder="e.g. 15"
-                      />
+                  <div className="mb-6">
+                    <label className="block text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-3">Validation Type</label>
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        onClick={() => handleTestCaseChange(index, 'type', 'standard')}
+                        className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${tc.type === 'standard' ? 'bg-[#007acc]/20 border-[#007acc] text-[#007acc]' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+                      >
+                        Input / Output
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTestCaseChange(index, 'type', 'script')}
+                        className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${tc.type === 'script' ? 'bg-purple-900/20 border-purple-600 text-purple-400' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+                      >
+                        Custom Script (Unit Test)
+                      </button>
                     </div>
                   </div>
+
+                  {tc.type === 'standard' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-zinc-500 text-[10px] font-bold uppercase mb-2">Stdin Input</label>
+                        <textarea 
+                          required
+                          value={tc.input}
+                          onChange={(e) => handleTestCaseChange(index, 'input', e.target.value)}
+                          rows={4}
+                          className="w-full bg-[#252526] border border-[#333333] text-white rounded p-3 text-sm font-mono focus:outline-none focus:border-[#007acc]"
+                          placeholder="What the program reads..."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-zinc-500 text-[10px] font-bold uppercase mb-2">Expected Stdout</label>
+                        <textarea 
+                          required
+                          value={tc.expectedOutput}
+                          onChange={(e) => handleTestCaseChange(index, 'expectedOutput', e.target.value)}
+                          rows={4}
+                          className="w-full bg-[#252526] border border-[#333333] text-white rounded p-3 text-sm font-mono focus:outline-none focus:border-[#007acc]"
+                          placeholder="What the program should print..."
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-zinc-500 text-[10px] font-bold uppercase mb-2">Test Script (Python)</label>
+                      <p className="text-[10px] text-zinc-600 mb-3 italic">This code will be appended to the student's code. Use `assert` statements to validate.</p>
+                      <textarea 
+                        required
+                        value={tc.testScript}
+                        onChange={(e) => handleTestCaseChange(index, 'testScript', e.target.value)}
+                        rows={8}
+                        className="w-full bg-[#252526] border border-[#333333] text-purple-200 rounded p-4 text-sm font-mono focus:outline-none focus:border-purple-600"
+                        placeholder="sol = Solution()\nassert sol.add(2, 3) == 5\nprint('Test Passed')"
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          <div className="pt-4 border-t border-[#333333] flex justify-end">
+          <div className="pt-8 border-t border-[#333333] flex justify-end gap-4">
+            <Link href="/admin/dashboard" className="px-6 py-3 text-zinc-500 hover:text-white transition-colors">Cancel</Link>
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="bg-[#007acc] text-white px-6 py-2 rounded font-semibold hover:bg-[#005f9e] transition-colors disabled:opacity-50"
+              className="bg-[#007acc] text-white px-10 py-3 rounded-lg font-bold hover:bg-[#005f9e] transition-all disabled:opacity-50 shadow-lg shadow-[#007acc]/20"
             >
-              {isSubmitting ? 'Saving...' : 'Save Problem'}
+              {isSubmitting ? 'Creating Challenge...' : 'Create Challenge'}
             </button>
           </div>
         </form>

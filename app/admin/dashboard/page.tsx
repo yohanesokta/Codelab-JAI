@@ -47,9 +47,14 @@ export default async function AdminDashboard() {
               ) : (
                 problems.map(p => (
                   <div key={p.id} className="flex justify-between items-center p-4 bg-[#1e1e1e] border border-[#333333] rounded">
-                    <div>
+                    <div className="flex flex-col gap-1">
                       <h3 className="text-white font-bold">{p.title}</h3>
-                      <p className="text-zinc-500 text-sm">ID: {p.id}</p>
+                      <div className="flex gap-4 text-[10px] uppercase font-bold text-zinc-500">
+                        <span>ID: {p.id}</span>
+                        {p.startTime && <span>Start: {new Date(p.startTime).toLocaleString()}</span>}
+                        {p.endTime && <span>End: {new Date(p.endTime).toLocaleString()}</span>}
+                        {p.duration && <span>Duration: {p.duration}m</span>}
+                      </div>
                     </div>
                   </div>
                 ))

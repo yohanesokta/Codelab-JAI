@@ -4,6 +4,9 @@ export const problems = mysqlTable('problems', {
   id: int('id').autoincrement().primaryKey(),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description').notNull(),
+  startTime: timestamp('start_time'),
+  endTime: timestamp('end_time'),
+  duration: int('duration'), // in minutes
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -12,8 +15,10 @@ export const testCases = mysqlTable('test_cases', {
   problemId: int('problem_id')
     .notNull()
     .references(() => problems.id, { onDelete: 'cascade' }),
-  input: text('input').notNull(),
-  expectedOutput: text('expected_output').notNull(),
+  type: varchar('type', { length: 20 }).default('standard').notNull(), // 'standard' (input/output) or 'script' (custom python code)
+  input: text('input'),
+  expectedOutput: text('expected_output'),
+  testScript: text('test_script'), // Custom python code to run against user code
 });
 
 export const submissions = mysqlTable('submissions', {
