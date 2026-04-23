@@ -1,10 +1,8 @@
 import { getAllProblemsAdmin } from "@/app/actions/problem";
-import { getSubmissions } from "@/app/actions/submission";
-import Link from "next/link";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import SubmissionsList from "./SubmissionsList";
 import ProblemsList from "./ProblemsList";
+import { cookies } from "next/headers";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -16,9 +14,8 @@ export default async function AdminDashboard() {
     redirect('/admin');
   }
 
-  const [problems, submissions] = await Promise.all([
+  const [problems] = await Promise.all([
     getAllProblemsAdmin(),
-    getSubmissions()
   ]);
 
   return (
@@ -27,7 +24,7 @@ export default async function AdminDashboard() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
-            <p className="text-zinc-500">Manage problems and monitor submissions.</p>
+            <p className="text-zinc-500">Manage problems and monitoring challenges.</p>
           </div>
           <div className="flex gap-4">
             <Link href="/" className="px-4 py-2 bg-[#2d2d2d] text-white rounded border border-[#333333] hover:bg-[#3d3d3d]">
@@ -39,12 +36,9 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8">
           {/* Problems List Component */}
           <ProblemsList problems={problems as any} />
-
-          {/* Submissions List Component */}
-          <SubmissionsList submissions={submissions} />
         </div>
       </div>
     </div>

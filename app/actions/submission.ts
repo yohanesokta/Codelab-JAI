@@ -140,6 +140,26 @@ export async function runTests(data: { problemId: number; code: string }) {
   }
 }
 
+export async function autoSubmitOnExpire(data: { nim: string; problemId: number; code: string }) {
+  try {
+    // Simply save the code as 'fail' because time is up
+    await db.insert(submissions).values({
+      nim: data.nim,
+      problemId: data.problemId,
+      code: data.code,
+      status: 'fail',
+    });
+
+    revalidatePath('/admin/dashboard');
+    revalidatePath(`/admin/problem/${data.problemId}/results`);
+
+    return { success: true, status: 'fail' };
+  } catch (error) {
+    console.error('Auto-submission failed:', error);
+    return { success: false, error: 'Execution failed due to server error' };
+  }
+}
+
 export async function submitCode(data: { nim: string; problemId: number; code: string }) {
   try {
     const problem = await getProblemById(data.problemId);
@@ -175,9 +195,11 @@ export async function submitCode(data: { nim: string; problemId: number; code: s
   }
 }
 
-export async function getSubmissions() {
+import { and } from 'drizzle-orm';
+
+export async function getSubmissions(problemId?: number) {
   // Join query to get submissions with problem titles
-  const result = await db.select({
+  let query = db.select({
     id: submissions.id,
     nim: submissions.nim,
     code: submissions.code,
@@ -187,8 +209,13 @@ export async function getSubmissions() {
     problemTitle: problems.title
   })
     .from(submissions)
-    .leftJoin(problems, eq(submissions.problemId, problems.id))
-    .orderBy(submissions.createdAt);
+    .leftJoin(problems, eq(submissions.problemId, problems.id));
+
+  if (problemId) {
+    query = query.where(eq(submissions.problemId, problemId)) as any;
+  }
+
+  const result = await query.orderBy(submissions.createdAt);
 
   return result;
 }

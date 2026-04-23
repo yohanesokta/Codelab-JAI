@@ -48,6 +48,13 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
                             </div>
                             <div className="flex gap-2">
                                 <Link 
+                                    href={`/admin/problem/${p.id}/results`}
+                                    className="p-2 text-zinc-400 hover:text-green-500 transition-colors"
+                                    title="View Results"
+                                >
+                                    <span className="material-symbols-outlined text-sm">bar_chart</span>
+                                </Link>
+                                <Link 
                                     href={`/admin/problem/${p.id}/edit`}
                                     className="p-2 text-zinc-400 hover:text-[#007acc] transition-colors"
                                     title="Edit Problem"

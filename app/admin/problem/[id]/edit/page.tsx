@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { getProblemById, updateProblem } from "@/app/actions/problem";
+import { getSubmissions } from "@/app/actions/submission";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import SubmissionsList from "../../../dashboard/SubmissionsList";
 
 interface TestCase {
   type: 'standard' | 'script';
@@ -30,6 +32,7 @@ export default function EditProblem() {
   useEffect(() => {
     async function fetchData() {
       const problem = await getProblemById(parseInt(id));
+      
       if (problem) {
         setTitle(problem.title);
         setDescription(problem.description);

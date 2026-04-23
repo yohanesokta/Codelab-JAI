@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { submitCode, runTests, runCode, stopCode } from "@/app/actions/submission";
+import { submitCode, runTests, runCode, stopCode, autoSubmitOnExpire } from "@/app/actions/submission";
 import { useRouter } from "next/navigation";
 import Timer from "../../components/Timer";
 import Editor from '@monaco-editor/react';
@@ -28,6 +28,7 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
   const [consoleOutput, setConsoleOutput] = useState<{stdout: string, stderr: string} | null>(null);
   const [activeTab, setActiveTab] = useState<'tests' | 'console'>('tests');
   const [executionError, setExecutionError] = useState<string | null>(null);
+  const [hasAutoSubmitted, setHasAutoSubmitted] = useState(false);
   
   const router = useRouter();
   const consoleEndRef = useRef<HTMLDivElement>(null);
@@ -150,10 +151,17 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
     }
   };
 
-  const handleTimeExpire = useCallback(() => {
+  const handleTimeExpire = useCallback(async () => {
     setIsLocked(true);
-    alert("Time is up! Your session has been locked.");
-  }, []);
+    if (!hasAutoSubmitted && nim) {
+      setHasAutoSubmitted(true);
+      await autoSubmitOnExpire({ nim, problemId, code });
+      alert("Time is up! Your session has been locked and your current code has been submitted.");
+      router.push('/');
+    } else {
+      alert("Time is up! Your session has been locked.");
+    }
+  }, [hasAutoSubmitted, nim, problemId, code, router]);
 
   return (
     <div className="flex flex-col h-full relative">
