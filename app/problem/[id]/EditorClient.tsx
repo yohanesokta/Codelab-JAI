@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { submitCode, runTests, runCode, stopCode, autoSubmitOnExpire } from "@/app/actions/submission";
+import { getProblemStatus } from "@/app/actions/problem";
 import { useRouter } from "next/navigation";
 import Timer from "../../components/Timer";
 import Editor from '@monaco-editor/react';
@@ -10,18 +11,23 @@ interface EditorClientProps {
   problemId: number;
   endTime?: Date | null;
   duration?: number | null;
+  timingMode: 'scheduled' | 'manual';
+  startTime?: Date | null;
 }
 
-export default function EditorClient({ problemId, endTime, duration }: EditorClientProps) {
+export default function EditorClient({ problemId, endTime, duration, timingMode, startTime }: EditorClientProps) {
   const [code, setCode] = useState("def solve():\n    # Write your python code here\n    pass\n\nsolve()\n");
   const [nim, setNim] = useState("");
   const [tempNim, setTempNim] = useState("");
   const [isLocked, setIsLocked] = useState(true);
-  const [effectiveEndTime, setEffectiveEndTime] = useState<Date | null>(endTime || null);
+  const [effectiveEndTime, setEffectiveEndTime] = useState<Date | null>(timingMode === 'manual' ? (startTime ? (endTime || (duration ? new Date(new Date(startTime).getTime() + duration * 60000) : null)) : null) : (endTime || null));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionId, setExecutionId] = useState<string | null>(null);
+  const [isManualStarted, setIsManualStarted] = useState(timingMode === 'manual' ? !!startTime : true);
+  const [manualStartTime, setManualStartTime] = useState<Date | null>(startTime || null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   
   const [allTestsPassed, setAllTestsPassed] = useState(false);
   const [testResults, setTestResults] = useState<any[]>([]);
@@ -53,6 +59,28 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
       return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     }
   }, [isLocked]);
+
+  // Polling for manual start
+  useEffect(() => {
+    if (timingMode === 'manual' && !isManualStarted) {
+      const interval = setInterval(async () => {
+        const status = await getProblemStatus(problemId);
+        if (status?.startTime) {
+          const start = new Date(status.startTime);
+          setIsManualStarted(true);
+          setManualStartTime(start);
+          
+          if (duration) {
+            const newEndTime = new Date(start.getTime() + duration * 60000);
+            setEffectiveEndTime(newEndTime);
+          }
+          
+          clearInterval(interval);
+        }
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [timingMode, isManualStarted, problemId, duration]);
 
   const handleStartChallenge = () => {
     if (!tempNim.trim()) {
@@ -130,6 +158,7 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
   };
 
   const handleSubmit = async () => {
+    if (!isManualStarted) return;
     if (!allTestsPassed) {
       alert("Please pass all test cases before submitting.");
       return;
@@ -152,16 +181,17 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
   };
 
   const handleTimeExpire = useCallback(async () => {
-    setIsLocked(true);
+    if (timingMode === 'manual' && !isManualStarted) return;
+    
+    setIsReadOnly(true);
     if (!hasAutoSubmitted && nim) {
       setHasAutoSubmitted(true);
       await autoSubmitOnExpire({ nim, problemId, code });
-      alert("Time is up! Your session has been locked and your current code has been submitted.");
-      router.push('/');
+      alert("Tantangan telah berakhir! Sesi Anda sekarang bersifat baca-saja dan jawaban terakhir telah dikirim.");
     } else {
-      alert("Time is up! Your session has been locked.");
+      alert("Tantangan telah berakhir atau belum dimulai oleh pengajar.");
     }
-  }, [hasAutoSubmitted, nim, problemId, code, router]);
+  }, [hasAutoSubmitted, nim, problemId, code, isManualStarted, timingMode]);
 
   return (
     <div className="flex flex-col h-full relative">
@@ -206,6 +236,13 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
         </div>
         
         <div className="flex items-center gap-3">
+          {(timingMode === 'manual' && !isManualStarted) && (
+            <div className="flex items-center gap-2 bg-purple-900/30 border border-purple-900/50 px-3 py-1 rounded-full animate-pulse">
+              <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+              <span className="text-[10px] text-purple-200 font-bold uppercase tracking-widest">Waiting for Admin to Start</span>
+            </div>
+          )}
+          
           <Timer endTime={effectiveEndTime} onExpire={handleTimeExpire} />
           
           <div className="flex gap-1 bg-[#1e1e1e] p-1 rounded border border-[#333333]">
@@ -230,7 +267,7 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
             
             <button 
                 onClick={handleRunTests}
-                disabled={isRunningTests || isSubmitting || isExecuting}
+                disabled={isRunningTests || isSubmitting || isExecuting || (timingMode === 'manual' && !isManualStarted) || isReadOnly}
                 className="bg-[#333333] text-white px-3 py-1 rounded text-xs font-semibold hover:bg-[#444444] transition-colors flex items-center gap-2 disabled:opacity-50"
             >
                 <span className="material-symbols-outlined text-sm">fact_check</span>
@@ -240,8 +277,8 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
           
           <button 
             onClick={handleSubmit}
-            disabled={!allTestsPassed || isSubmitting || isRunningTests || isExecuting}
-            className={`px-4 py-1.5 rounded text-sm font-bold transition-all flex items-center gap-2 ${allTestsPassed ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-900/20' : 'bg-[#1e1e1e] text-zinc-600 border border-[#333333] cursor-not-allowed'}`}
+            disabled={!allTestsPassed || isSubmitting || isRunningTests || isExecuting || (timingMode === 'manual' && !isManualStarted) || isReadOnly}
+            className={`px-4 py-1.5 rounded text-sm font-bold transition-all flex items-center gap-2 ${allTestsPassed && isManualStarted && !isReadOnly ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-900/20' : 'bg-[#1e1e1e] text-zinc-600 border border-[#333333] cursor-not-allowed'}`}
           >
             <span className="material-symbols-outlined text-sm">cloud_upload</span>
             {isSubmitting ? 'Submitting...' : 'Submit'}
@@ -263,7 +300,7 @@ export default function EditorClient({ problemId, endTime, duration }: EditorCli
               minimap: { enabled: false },
               automaticLayout: true,
               scrollBeyondLastLine: false,
-              readOnly: isRunningTests || isSubmitting || isExecuting,
+              readOnly: isRunningTests || isSubmitting || isExecuting || isReadOnly,
               padding: { top: 16, bottom: 16 },
               fontFamily: "'Fira Code', 'Courier New', monospace",
               fontLigatures: true,

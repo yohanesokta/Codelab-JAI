@@ -31,6 +31,7 @@ export async function createProblem(data: {
   startTime?: string | null;
   endTime?: string | null;
   duration?: number | null;
+  timingMode: 'scheduled' | 'manual';
   isPublic?: boolean;
   testCases: { 
     type: string;
@@ -46,6 +47,7 @@ export async function createProblem(data: {
       startTime: data.startTime ? new Date(data.startTime) : null,
       endTime: data.endTime ? new Date(data.endTime) : null,
       duration: data.duration,
+      timingMode: data.timingMode,
       isPublic: data.isPublic ?? true,
     });
     
@@ -78,6 +80,7 @@ export async function updateProblem(id: number, data: {
   startTime?: string | null;
   endTime?: string | null;
   duration?: number | null;
+  timingMode: 'scheduled' | 'manual';
   isPublic?: boolean;
   testCases: { 
     type: string;
@@ -93,6 +96,7 @@ export async function updateProblem(id: number, data: {
       startTime: data.startTime ? new Date(data.startTime) : null,
       endTime: data.endTime ? new Date(data.endTime) : null,
       duration: data.duration,
+      timingMode: data.timingMode,
       isPublic: data.isPublic ?? true,
     }).where(eq(problems.id, id));
     
@@ -117,6 +121,44 @@ export async function updateProblem(id: number, data: {
     return { success: true };
   } catch (error) {
     console.error('Failed to update problem:', error);
+    return { success: false, error: 'Internal Server Error' };
+  }
+}
+
+export async function startProblemManual(id: number) {
+  try {
+    await db.update(problems).set({
+      startTime: new Date(),
+    }).where(eq(problems.id, id));
+    
+    revalidatePath('/admin/dashboard');
+    revalidatePath(`/problem/${id}`);
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to start problem:', error);
+    return { success: false, error: 'Internal Server Error' };
+  }
+}
+
+export async function getProblemStatus(id: number) {
+  const result = await db.select({ startTime: problems.startTime }).from(problems).where(eq(problems.id, id));
+  if (result.length === 0) return null;
+  return result[0];
+}
+
+export async function resetProblemManual(id: number) {
+  try {
+    await db.update(problems).set({
+      startTime: null,
+    }).where(eq(problems.id, id));
+    
+    revalidatePath('/admin/dashboard');
+    revalidatePath(`/problem/${id}`);
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to reset problem:', error);
     return { success: false, error: 'Internal Server Error' };
   }
 }

@@ -58,7 +58,13 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
             </div>
 
             <div className="flex-1 bg-[#1e1e1e] flex flex-col h-full min-h-[500px]">
-              <EditorClient problemId={problem.id} endTime={problem.endTime} duration={problem.duration} />
+              <EditorClient 
+                problemId={problem.id} 
+                endTime={problem.endTime} 
+                duration={problem.duration}
+                timingMode={problem.timingMode as 'scheduled' | 'manual'}
+                startTime={problem.startTime}
+              />
             </div>
           </div>
         </main>

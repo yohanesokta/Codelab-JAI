@@ -15,6 +15,13 @@
       "when": 1776903056908,
       "tag": "0001_equal_satana",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1776955008391,
+      "tag": "0002_simple_warlock",
+      "breakpoints": true
     }
   ]
 }

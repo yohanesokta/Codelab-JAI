@@ -18,6 +18,7 @@ export default function NewProblem() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [duration, setDuration] = useState("");
+  const [timingMode, setTimingMode] = useState<'scheduled' | 'manual'>('scheduled');
   const [isPublic, setIsPublic] = useState(true);
   const [testCases, setTestCases] = useState<TestCase[]>([{ type: 'standard', input: "", expectedOutput: "" }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,9 +46,10 @@ export default function NewProblem() {
       const res = await createProblem({ 
         title, 
         description, 
-        startTime: startTime || null,
-        endTime: endTime || null,
+        startTime: timingMode === 'scheduled' ? (startTime || null) : null,
+        endTime: timingMode === 'scheduled' ? (endTime || null) : null,
         duration: duration ? parseInt(duration) : null,
+        timingMode,
         isPublic,
         testCases 
       });
@@ -102,39 +104,80 @@ export default function NewProblem() {
             </div>
           </section>
 
-          {/* Timing Info */}
           <section className="space-y-6">
             <h2 className="text-xl font-bold text-white border-b border-[#333333] pb-2">Timing & Scheduling</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Start Time</label>
-                <input 
-                  type="datetime-local" 
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
-                />
-              </div>
-              <div>
-                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">End Time</label>
-                <input 
-                  type="datetime-local" 
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
-                />
-              </div>
-              <div>
-                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Duration (Minutes)</label>
-                <input 
-                  type="number" 
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
-                  placeholder="e.g. 60"
-                />
-              </div>
+            
+            <div className="flex gap-4 mb-6">
+              <button
+                type="button"
+                onClick={() => setTimingMode('scheduled')}
+                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${timingMode === 'scheduled' ? 'bg-[#007acc]/20 border-[#007acc] text-[#007acc]' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+              >
+                Scheduled (Date & Time)
+              </button>
+              <button
+                type="button"
+                onClick={() => setTimingMode('manual')}
+                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${timingMode === 'manual' ? 'bg-purple-900/20 border-purple-600 text-purple-400' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+              >
+                Manual Start (Admin Control)
+              </button>
             </div>
+
+            {timingMode === 'scheduled' ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-2">
+                <div>
+                  <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Start Date & Time</label>
+                  <input 
+                    type="datetime-local" 
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">End Date & Time</label>
+                  <input 
+                    type="datetime-local" 
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Duration (Optional Minutes)</label>
+                  <input 
+                    type="number" 
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                    placeholder="e.g. 60"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="bg-[#1e1e1e] border border-[#333333] rounded-lg p-6 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-start gap-4 mb-6">
+                  <span className="material-symbols-outlined text-purple-400">info</span>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    In <strong>Manual Mode</strong>, guests can open the problem and write code immediately, but they can only "Run" their code. 
+                    The "Run Tests" and "Submit" buttons will be disabled until you click <strong>"Start Challenge"</strong> from the Admin Dashboard. 
+                    The countdown will begin for everyone at that moment.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Challenge Duration (Minutes)</label>
+                  <input 
+                    required
+                    type="number" 
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="w-full bg-[#252526] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-purple-600"
+                    placeholder="e.g. 60"
+                  />
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Visibility Info */}

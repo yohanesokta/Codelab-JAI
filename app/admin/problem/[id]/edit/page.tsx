@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getProblemById, updateProblem } from "@/app/actions/problem";
 import { getSubmissions } from "@/app/actions/submission";
 import { useRouter, useParams } from "next/navigation";
@@ -18,12 +18,14 @@ export default function EditProblem() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
+  const problemRef = useRef<any>(null);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [duration, setDuration] = useState("");
+  const [timingMode, setTimingMode] = useState<'scheduled' | 'manual'>('scheduled');
   const [isPublic, setIsPublic] = useState(true);
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,11 +36,13 @@ export default function EditProblem() {
       const problem = await getProblemById(parseInt(id));
       
       if (problem) {
+        problemRef.current = problem;
         setTitle(problem.title);
         setDescription(problem.description);
         setStartTime(problem.startTime ? new Date(problem.startTime).toISOString().slice(0, 16) : "");
         setEndTime(problem.endTime ? new Date(problem.endTime).toISOString().slice(0, 16) : "");
         setDuration(problem.duration?.toString() || "");
+        setTimingMode(problem.timingMode as 'scheduled' | 'manual');
         setIsPublic(problem.isPublic);
         setTestCases(problem.testCases.map((tc: any) => ({
             type: tc.type as 'standard' | 'script',
@@ -74,9 +78,12 @@ export default function EditProblem() {
       const res = await updateProblem(parseInt(id), { 
         title, 
         description, 
-        startTime: startTime || null,
-        endTime: endTime || null,
+        startTime: timingMode === 'scheduled' 
+            ? (startTime || null) 
+            : (problemRef.current?.timingMode === 'manual' ? problemRef.current?.startTime : null),
+        endTime: timingMode === 'scheduled' ? (endTime || null) : null,
         duration: duration ? parseInt(duration) : null,
+        timingMode,
         isPublic,
         testCases 
       });
@@ -135,39 +142,80 @@ export default function EditProblem() {
             </div>
           </section>
 
-          {/* Timing Info */}
           <section className="space-y-6">
             <h2 className="text-xl font-bold text-white border-b border-[#333333] pb-2">Timing & Scheduling</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Start Time</label>
-                <input 
-                  type="datetime-local" 
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
-                />
-              </div>
-              <div>
-                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">End Time</label>
-                <input 
-                  type="datetime-local" 
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
-                />
-              </div>
-              <div>
-                <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Duration (Minutes)</label>
-                <input 
-                  type="number" 
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
-                  placeholder="e.g. 60"
-                />
-              </div>
+            
+            <div className="flex gap-4 mb-6">
+              <button
+                type="button"
+                onClick={() => setTimingMode('scheduled')}
+                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${timingMode === 'scheduled' ? 'bg-[#007acc]/20 border-[#007acc] text-[#007acc]' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+              >
+                Scheduled (Date & Time)
+              </button>
+              <button
+                type="button"
+                onClick={() => setTimingMode('manual')}
+                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${timingMode === 'manual' ? 'bg-purple-900/20 border-purple-600 text-purple-400' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+              >
+                Manual Start (Admin Control)
+              </button>
             </div>
+
+            {timingMode === 'scheduled' ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-2">
+                <div>
+                  <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Start Date & Time</label>
+                  <input 
+                    type="datetime-local" 
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">End Date & Time</label>
+                  <input 
+                    type="datetime-local" 
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Duration (Minutes)</label>
+                  <input 
+                    type="number" 
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                    placeholder="e.g. 60"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="bg-[#1e1e1e] border border-[#333333] rounded-lg p-6 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-start gap-4 mb-6">
+                  <span className="material-symbols-outlined text-purple-400">info</span>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    In <strong>Manual Mode</strong>, guests can open the problem and write code immediately, but they can only "Run" their code. 
+                    The "Run Tests" and "Submit" buttons will be disabled until you click <strong>"Start Challenge"</strong> from the Admin Dashboard. 
+                    The countdown will begin for everyone at that moment.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Challenge Duration (Minutes)</label>
+                  <input 
+                    required
+                    type="number" 
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="w-full bg-[#252526] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-purple-600"
+                    placeholder="e.g. 60"
+                  />
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Visibility Info */}

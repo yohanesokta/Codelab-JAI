@@ -7,6 +7,7 @@ export const problems = mysqlTable('problems', {
   startTime: timestamp('start_time'),
   endTime: timestamp('end_time'),
   duration: int('duration'), // in minutes
+  timingMode: varchar('timing_mode', { length: 20 }).default('scheduled').notNull(), // 'scheduled' or 'manual'
   isPublic: boolean('is_public').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

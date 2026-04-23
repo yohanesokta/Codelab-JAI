@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { deleteProblem } from "@/app/actions/problem";
+import { deleteProblem, startProblemManual, resetProblemManual } from "@/app/actions/problem";
 
 interface Problem {
     id: number;
@@ -10,6 +10,7 @@ interface Problem {
     startTime: Date | null;
     endTime: Date | null;
     duration: number | null;
+    timingMode: 'scheduled' | 'manual';
 }
 
 interface ProblemsListProps {
@@ -44,9 +45,26 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
                                     {p.startTime && <span>Start: {new Date(p.startTime).toLocaleString()}</span>}
                                     {p.endTime && <span>End: {new Date(p.endTime).toLocaleString()}</span>}
                                     {p.duration && <span>Duration: {p.duration}m</span>}
+                                    <span className={`px-1.5 py-0.5 rounded border text-[9px] ${p.timingMode === 'manual' ? 'bg-purple-900/40 text-purple-400 border-purple-900/50' : 'bg-blue-900/40 text-blue-400 border-blue-900/50'}`}>
+                                        {p.timingMode === 'manual' ? 'Manual Start' : 'Scheduled'}
+                                    </span>
                                 </div>
                             </div>
                             <div className="flex gap-2">
+                                {p.timingMode === 'manual' && (
+                                    <button 
+                                        onClick={async () => {
+                                            const action = p.startTime ? 'Restart' : 'Start';
+                                            if (confirm(`${action} challenge "${p.title}"? This will set the countdown to ${p.duration}m for all students starting from NOW.`)) {
+                                                await startProblemManual(p.id);
+                                            }
+                                        }}
+                                        className={`flex items-center gap-1 text-white text-[10px] font-bold px-3 py-1 rounded transition-all shadow-lg ${p.startTime ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-900/20' : 'bg-purple-600 hover:bg-purple-700 shadow-purple-900/20'}`}
+                                    >
+                                        <span className="material-symbols-outlined text-sm">{p.startTime ? 'restart_alt' : 'play_circle'}</span>
+                                        {p.startTime ? 'RESTART' : 'START'}
+                                    </button>
+                                )}
                                 <Link 
                                     href={`/admin/problem/${p.id}/results`}
                                     className="p-2 text-zinc-400 hover:text-green-500 transition-colors"
