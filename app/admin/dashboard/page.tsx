@@ -38,7 +38,7 @@ export default async function AdminDashboard() {
           </div>
           <div className="flex gap-4">
             {authEnabled && (
-              <Link href="/admin/requests" className="px-4 py-2 bg-amber-600/20 text-amber-500 rounded border border-amber-600/30 hover:bg-amber-600 hover:text-white transition-all flex items-center gap-2">
+              <Link href="/admin/requests" className="px-4 py-2 bg-green-600/10 text-green-500 rounded border border-green-600/30 hover:bg-green-600 hover:text-white transition-all flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">group_add</span>
                 Permintaan Moderator
               </Link>
@@ -47,7 +47,7 @@ export default async function AdminDashboard() {
               Lihat Situs
             </Link>
 
-            <Link href="/admin/problem/new" className="px-4 py-2 bg-[#007acc] text-white rounded hover:bg-[#005f9e]">
+            <Link href="/admin/problem/new" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
               + Soal Baru
             </Link>
           </div>

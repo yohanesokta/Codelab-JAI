@@ -48,9 +48,9 @@ export default function AdminPage() {
     }
   };
 
-  if (status === "loading") return (
+  if (status === "loading" || (status === "authenticated" && (session?.user as any)?.role === 'admin')) return (
     <div className="min-h-screen bg-[#1e1e1e] flex items-center justify-center">
-       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#007acc]"></div>
+       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
     </div>
   );
 
@@ -65,7 +65,7 @@ export default function AdminPage() {
           <p className="text-zinc-400 text-sm mb-8 leading-relaxed">Silakan masuk dengan akun Anda untuk mengakses Panel Administrator.</p>
           <Link 
             href={`/auth/login?callbackUrl=/admin`}
-            className="block w-full bg-[#007acc] text-white py-3 rounded font-bold hover:bg-[#005f9e] transition-all"
+            className="block w-full bg-green-600 text-white py-3 rounded font-bold hover:bg-green-700 transition-all"
           >
             Masuk Sekarang
           </Link>
@@ -80,7 +80,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-[#1e1e1e] flex items-center justify-center p-4">
       <div className="bg-[#252526] border border-[#333333] p-8 rounded-lg max-w-md w-full shadow-2xl">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-amber-500/20 text-amber-500 rounded-lg mx-auto mb-4 flex items-center justify-center">
+          <div className="w-12 h-12 bg-green-600/20 text-green-500 rounded-lg mx-auto mb-4 flex items-center justify-center">
             <span className="material-symbols-outlined text-2xl">security</span>
           </div>
           <h1 className="text-xl font-bold text-white mb-2">Permintaan Akses Admin</h1>
@@ -103,14 +103,14 @@ export default function AdminPage() {
               rows={4}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 text-sm focus:outline-none focus:border-[#007acc] resize-none"
+              className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 text-sm focus:outline-none focus:border-green-600 resize-none"
               placeholder="Jelaskan mengapa Anda memerlukan akses admin..."
             />
           </div>
           <button 
             type="submit"
             disabled={loading || message?.type === 'success'}
-            className="w-full bg-[#007acc] text-white py-3 rounded font-bold hover:bg-[#005f9e] transition-colors disabled:opacity-50"
+            className="w-full bg-green-600 text-white py-3 rounded font-bold hover:bg-green-700 transition-colors disabled:opacity-50"
           >
             {loading ? "Mengirim..." : "Kirim Permintaan Akses"}
           </button>

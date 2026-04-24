@@ -26,7 +26,7 @@ function getProblemStatus(p: Problem): { label: string; color: string } {
         const end = p.endTime ? new Date(p.endTime) : null;
 
         if (start && now < start) {
-            return { label: 'Belum Dimulai', color: 'bg-amber-900/40 text-amber-400 border-amber-900/50' };
+            return { label: 'Belum Dimulai', color: 'bg-zinc-800 text-zinc-400 border-zinc-700' };
         }
         if (end && now > end) {
             return { label: 'Telah Selesai', color: 'bg-zinc-800 text-zinc-500 border-zinc-700' };
@@ -35,7 +35,7 @@ function getProblemStatus(p: Problem): { label: string; color: string } {
     }
 
     if (!p.startTime) {
-        return { label: 'Belum Dimulai', color: 'bg-purple-900/40 text-purple-400 border-purple-900/50' };
+        return { label: 'Belum Dimulai', color: 'bg-zinc-800 text-zinc-400 border-zinc-700' };
     }
 
     const start = new Date(p.startTime);
@@ -80,7 +80,7 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <h3 className="text-white font-bold">{p.title}</h3>
                                         {!p.isPublic && (
-                                            <span className="text-[9px] bg-orange-900/40 text-orange-400 px-1.5 py-0.5 rounded border border-orange-900/50 font-bold uppercase tracking-wider">Privat</span>
+                                            <span className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded border border-zinc-700 font-bold uppercase tracking-wider">Privat</span>
                                         )}
                                         <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase tracking-wider ${status.color}`}>
                                             {status.label}
@@ -88,7 +88,7 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
                                     </div>
                                     <div className="flex gap-4 text-[10px] uppercase font-bold text-zinc-500 flex-wrap">
                                         <span>ID: {p.id}</span>
-                                        <span className={`px-1.5 py-0.5 rounded border text-[9px] ${p.timingMode === 'manual' ? 'bg-purple-900/40 text-purple-400 border-purple-900/50' : 'bg-blue-900/40 text-blue-400 border-blue-900/50'}`}>
+                                        <span className={`px-1.5 py-0.5 rounded border text-[9px] ${p.timingMode === 'manual' ? 'bg-zinc-800 text-zinc-400 border-zinc-700' : 'bg-green-900/10 text-green-500 border-green-900/20'}`}>
                                             {p.timingMode === 'manual' ? '⏱ Mulai Manual' : '📅 Terjadwal'}
                                         </span>
                                         {p.timingMode === 'scheduled' && p.startTime && (
@@ -113,9 +113,7 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
                                         const isFinished = s.label === 'Sesi Selesai';
                                         const label = isRunning ? 'MULAI ULANG' : (isFinished ? 'MULAI KEMBALI' : 'MULAI');
                                         const icon = isRunning ? 'restart_alt' : 'play_circle';
-                                        const color = isRunning
-                                            ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-900/20'
-                                            : 'bg-purple-600 hover:bg-purple-700 shadow-purple-900/20';
+                                        const color = 'bg-green-600 hover:bg-green-700 shadow-green-900/20';
                                         return (
                                             <button
                                                 onClick={async () => {
@@ -136,7 +134,7 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
 
                                     <button
                                         onClick={() => handleShare(p.id)}
-                                        className={`p-2 transition-colors flex items-center gap-1 ${copiedId === p.id ? 'text-green-500' : 'text-zinc-400 hover:text-orange-400'}`}
+                                        className={`p-2 transition-colors flex items-center gap-1 ${copiedId === p.id ? 'text-green-500' : 'text-zinc-400 hover:text-green-400'}`}
                                         title="Bagikan Tautan"
                                     >
                                         {copiedId === p.id ? (
@@ -157,7 +155,7 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
                                     </Link>
                                     <Link
                                         href={`/admin/problem/${p.id}/edit`}
-                                        className="p-2 text-zinc-400 hover:text-[#007acc] transition-colors"
+                                        className="p-2 text-zinc-400 hover:text-green-500 transition-colors"
                                         title="Ubah Soal"
                                     >
                                         <span className="material-symbols-outlined text-sm">edit</span>

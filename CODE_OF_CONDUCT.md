@@ -29,24 +29,24 @@ Dua mode:
 
 ---
 
-## ⚠️ Sintaks `assert` yang Benar
+## Sintaks `assert` yang Benar
 
 Ini adalah kesalahan paling umum saat menulis skrip pengujian.
 
-### ❌ SALAH — Trailing comma tanpa pesan di baris berikutnya
+### SALAH — Trailing comma tanpa pesan di baris berikutnya
 ```python
 # JANGAN lakukan ini!
 assert bubble_sort([3,1,2]) == [1,2,3],
                                        # ^ SyntaxError! koma di akhir baris tanpa pesan
 ```
 
-### ✅ BENAR — Satu baris penuh
+### BENAR — Satu baris penuh
 ```python
 assert bubble_sort([3,1,2]) == [1,2,3]
 assert bubble_sort([3,1,2]) == [1,2,3], "Harus menghasilkan [1,2,3]"
 ```
 
-### ✅ BENAR — Multi-baris dengan tanda kurung
+### BENAR — Multi-baris dengan tanda kurung
 ```python
 # Jika ekspresi panjang, gunakan kurung di sekitar ekspresi saja
 assert (bubble_sort([3,1,2]) == [1,2,3]), (
@@ -54,7 +54,7 @@ assert (bubble_sort([3,1,2]) == [1,2,3]), (
 )
 ```
 
-### ❌ SALAH — Tuple dalam assert (selalu True!)
+### SALAH — Tuple dalam assert (selalu True!)
 ```python
 # JANGAN lakukan ini! Ini selalu True karena tuple non-kosong = True
 assert (bubble_sort([3,1,2]) == [1,2,3], "pesan")
@@ -243,7 +243,7 @@ print("Validasi output lulus!")
 
 ## Tips Penulisan Test Case
 
-### ✅ Praktik yang Baik
+### Praktik yang Baik
 ```python
 # Berikan pesan deskriptif pada setiap assert
 assert fungsi(input) == expected, f"Dengan input {input}, harus menghasilkan {expected}, bukan {fungsi(input)}"
@@ -255,7 +255,7 @@ assert Stack().is_empty(), "Stack baru harus kosong"
 print("Semua test lulus!")
 ```
 
-### ❌ Hindari
+### Hindari
 ```python
 # Jangan gunakan print untuk validasi (tidak andal)
 print(fungsi(5))  # SALAH — hanya mencetak, tidak memvalidasi

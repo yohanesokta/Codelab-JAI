@@ -54,7 +54,13 @@ export default function AdminRequestsPage() {
     }
   };
 
-  if (status === "loading" || loading) return null;
+  if (status === "loading" || loading || (status === "authenticated" && (session?.user as any)?.role !== 'admin') || status === "unauthenticated") {
+    return (
+      <div className="min-h-screen bg-[#1e1e1e] flex items-center justify-center">
+         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -84,7 +90,7 @@ export default function AdminRequestsPage() {
                   <div key={req.id} className="bg-[#252526] border border-[#333333] rounded-xl p-6 flex flex-col md:flex-row gap-6 md:items-center">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-[#007acc]/20 text-[#007acc] rounded-full flex items-center justify-center font-bold">
+                        <div className="w-10 h-10 bg-green-600/20 text-green-500 rounded-full flex items-center justify-center font-bold">
                           {req.userName?.[0] || req.userEmail?.[0].toUpperCase()}
                         </div>
                         <div>
