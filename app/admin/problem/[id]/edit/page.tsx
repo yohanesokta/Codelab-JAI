@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from "react";
-import { getProblemById, updateProblem, regenerateShortLink } from "@/app/actions/problem";
+import { getProblemById, updateProblem } from "@/app/actions/problem";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -43,7 +43,6 @@ export default function EditProblem() {
   const [functionName, setFunctionName] = useState("");
   const [className, setClassName] = useState("");
   const [shortLink, setShortLink] = useState("");
-  const [isRegeneratingLink, setIsRegeneratingLink] = useState(false);
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,24 +92,6 @@ export default function EditProblem() {
 
   const handleRemoveTestCase = (index: number) => {
     setTestCases(testCases.filter((_, i) => i !== index));
-  };
-
-  const handleRegenerateLink = async () => {
-    if (!confirm("Buat ulang tautan singkat? Tautan lama mungkin tidak akan berfungsi lagi.")) return;
-    
-    setIsRegeneratingLink(true);
-    try {
-      const res = await regenerateShortLink(parseInt(id));
-      if (res.success && res.shortLink) {
-        setShortLink(res.shortLink);
-      } else {
-        alert("Gagal membuat ulang tautan: " + res.error);
-      }
-    } catch (e) {
-      alert("Terjadi kesalahan jaringan.");
-    } finally {
-      setIsRegeneratingLink(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -373,25 +354,14 @@ export default function EditProblem() {
             <h2 className="text-xl font-bold text-white border-b border-[#333333] pb-2">Tautan Singkat</h2>
             <div className="bg-[#1e1e1e] border border-[#333333] rounded-lg p-6">
               <label className="block text-zinc-400 text-xs font-bold uppercase mb-2">Short Link (s.id)</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  readOnly
-                  value={shortLink}
-                  className="flex-1 bg-[#252526] border border-[#333333] text-zinc-400 rounded p-3 text-sm font-mono"
-                  placeholder="Belum ada tautan singkat"
-                />
-                <button
-                  type="button"
-                  onClick={handleRegenerateLink}
-                  disabled={isRegeneratingLink}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-sm">{isRegeneratingLink ? 'sync' : 'refresh'}</span>
-                  {isRegeneratingLink ? 'Memproses...' : 'Buat Ulang'}
-                </button>
-              </div>
-              <p className="mt-3 text-[10px] text-zinc-500 italic">Tautan singkat digunakan untuk memudahkan mahasiswa mengakses soal saat diproyeksikan.</p>
+              <input
+                type="text"
+                value={shortLink}
+                onChange={(e) => setShortLink(e.target.value)}
+                className="w-full bg-[#252526] border border-[#333333] text-white rounded p-3 text-sm font-mono focus:outline-none focus:border-green-600"
+                placeholder="Contoh: https://s.id/xyz123"
+              />
+              <p className="mt-3 text-[10px] text-zinc-500 italic">Anda dapat mengubah tautan ini secara manual jika diperlukan.</p>
             </div>
           </section>
 
@@ -400,14 +370,19 @@ export default function EditProblem() {
             <div className="flex justify-between items-center border-b border-[#333333] pb-2">
               <div>
                 <h2 className="text-xl font-bold text-white">Kasus Pengujian</h2>
-                <p className="text-[10px] text-zinc-500 mt-0.5 italic">Semua kasus pengujian terlihat oleh mahasiswa — tidak ada hidden test.</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="material-symbols-outlined text-green-500 text-sm">info</span>
+                  <p className="text-sm text-zinc-400">
+                    Semua kasus pengujian terlihat oleh mahasiswa. Pelajari cara menulis test script di <a href="https://github.com/yohanesokta/Codelab-JAI/blob/main/CODE_OF_CONDUCT.md" target="_blank" rel="noopener noreferrer" className="text-green-500 hover:underline font-bold transition-all">Dokumentasi Evaluator</a>.
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={handleAddTestCase}
-                className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded transition-colors"
+                className="bg-green-600 mx-10 min-w-max hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded transition-colors"
               >
-                + Tambah Kasus Pengujian
+                + Unit Test
               </button>
             </div>
 

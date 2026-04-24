@@ -128,7 +128,7 @@ export default function NewProblem() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Buat Soal Baru</h1>
-            <Link href="/admin/dashboard" className="text-[#007acc] hover:underline">&larr; Kembali ke Dasbor</Link>
+            <Link href="/admin/dashboard" className="text-green-500 hover:underline">&larr; Kembali ke Dasbor</Link>
           </div>
         </div>
 
@@ -143,7 +143,7 @@ export default function NewProblem() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-green-600"
                 placeholder="Contoh: Implementasi Stack Menggunakan Class"
               />
             </div>
@@ -175,7 +175,7 @@ export default function NewProblem() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={8}
-                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-4 focus:outline-none focus:border-[#007acc] font-mono text-sm shadow-inner"
+                  className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-4 focus:outline-none focus:border-green-600 font-mono text-sm shadow-inner"
                   placeholder="Gunakan Markdown untuk deskripsi soal Anda..."
                 />
               ) : (
@@ -206,7 +206,7 @@ export default function NewProblem() {
                   type="button"
                   onClick={() => handleSolutionTypeChange(opt.id)}
                   className={`p-4 rounded-lg border text-left transition-all ${solutionType === opt.id
-                    ? opt.id === 'function' ? 'bg-[#007acc]/15 border-[#007acc] text-[#007acc]'
+                    ? opt.id === 'function' ? 'bg-green-600/15 border-green-600 text-green-500'
                     : opt.id === 'class' ? 'bg-emerald-900/20 border-emerald-600 text-emerald-400'
                     : 'bg-purple-900/20 border-purple-600 text-purple-400'
                     : 'bg-[#1e1e1e] border-[#333333] text-zinc-500 hover:border-zinc-500'}`}
@@ -225,7 +225,7 @@ export default function NewProblem() {
                   type="text"
                   value={functionName}
                   onChange={(e) => setFunctionName(e.target.value)}
-                  className="w-full bg-[#1e1e1e] border border-[#007acc]/40 text-white rounded p-3 focus:outline-none focus:border-[#007acc] font-mono"
+                  className="w-full bg-[#1e1e1e] border border-green-600/40 text-white rounded p-3 focus:outline-none focus:border-green-600 font-mono"
                   placeholder="Contoh: hitung_faktorial"
                 />
                 <p className="text-[10px] text-zinc-600 mt-1 italic">Nama ini akan muncul di template kode awal mahasiswa dan dipakai di test script.</p>
@@ -239,7 +239,7 @@ export default function NewProblem() {
                   type="text"
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
-                  className="w-full bg-[#1e1e1e] border border-emerald-600/40 text-white rounded p-3 focus:outline-none focus:border-emerald-600 font-mono"
+                  className="w-full bg-[#1e1e1e] border border-green-600/40 text-white rounded p-3 focus:outline-none focus:border-emerald-600 font-mono"
                   placeholder="Contoh: Stack"
                 />
                 <p className="text-[10px] text-zinc-600 mt-1 italic">Nama ini akan muncul di template kode awal mahasiswa dan dipakai di test script.</p>
@@ -255,7 +255,7 @@ export default function NewProblem() {
               <button
                 type="button"
                 onClick={() => setTimingMode('scheduled')}
-                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${timingMode === 'scheduled' ? 'bg-[#007acc]/20 border-[#007acc] text-[#007acc]' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${timingMode === 'scheduled' ? 'bg-green-600/20 border-green-600 text-green-500' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
               >
                 Terjadwal (Tanggal & Waktu)
               </button>
@@ -276,7 +276,7 @@ export default function NewProblem() {
                     type="datetime-local"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-green-600"
                   />
                 </div>
                 <div>
@@ -285,7 +285,7 @@ export default function NewProblem() {
                     type="datetime-local"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-green-600"
                   />
                 </div>
                 <div>
@@ -294,7 +294,7 @@ export default function NewProblem() {
                     type="number"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-[#007acc]"
+                    className="w-full bg-[#1e1e1e] border border-[#333333] text-white rounded p-3 focus:outline-none focus:border-green-600"
                     placeholder="Contoh: 60"
                   />
                 </div>
@@ -330,7 +330,7 @@ export default function NewProblem() {
               <button
                 type="button"
                 onClick={() => setIsPublic(true)}
-                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${isPublic ? 'bg-[#007acc]/20 border-[#007acc] text-[#007acc]' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
+                className={`flex-1 py-3 px-4 rounded border text-sm font-bold transition-all ${isPublic ? 'bg-green-600/20 border-green-600 text-green-500' : 'bg-[#252526] border-[#333333] text-zinc-500'}`}
               >
                 Publik (Muncul di Beranda)
               </button>
@@ -350,14 +350,19 @@ export default function NewProblem() {
             <div className="flex justify-between items-center border-b border-[#333333] pb-2">
               <div>
                 <h2 className="text-xl font-bold text-white">Kasus Pengujian</h2>
-                <p className="text-[10px] text-zinc-500 mt-0.5 italic">Semua kasus pengujian terlihat oleh mahasiswa — tidak ada hidden test.</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="material-symbols-outlined text-green-500 text-sm">info</span>
+                  <p className="text-sm text-zinc-400">
+                    Semua kasus pengujian terlihat oleh mahasiswa. Pelajari cara menulis test script di <a href="https://github.com/yohanesokta/Codelab-JAI/blob/main/CODE_OF_CONDUCT.md" target="_blank" rel="noopener noreferrer" className="text-green-500 hover:underline font-bold transition-all">Dokumentasi Evaluator</a>.
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={handleAddTestCase}
-                className="bg-[#007acc] hover:bg-[#005f9e] text-white text-xs font-bold px-4 py-2 rounded transition-colors"
+                className="bg-green-600 mx-10 min-w-max hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded transition-colors"
               >
-                + Tambah Kasus Pengujian
+                + Unit test
               </button>
             </div>
 
@@ -381,7 +386,7 @@ export default function NewProblem() {
                     <div className="flex items-center justify-between mb-2">
                       <label className="block text-zinc-500 text-[10px] font-bold uppercase">Skrip Pengujian (Python)</label>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                        solutionType === 'function' ? 'bg-[#007acc]/20 text-[#007acc]'
+                        solutionType === 'function' ? 'bg-green-600/20 text-green-500'
                         : solutionType === 'class' ? 'bg-emerald-900/20 text-emerald-400'
                         : 'bg-purple-900/20 text-purple-400'
                       }`}>
@@ -429,7 +434,7 @@ export default function NewProblem() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-[#007acc] text-white px-10 py-3 rounded-lg font-bold hover:bg-[#005f9e] transition-all disabled:opacity-50 shadow-lg shadow-[#007acc]/20"
+              className="bg-green-600 text-white px-10 py-3 rounded-lg font-bold hover:bg-green-700 transition-all disabled:opacity-50 shadow-lg shadow-green-900/20"
             >
               {isSubmitting ? 'Sedang Membuat Soal...' : 'Buat Soal'}
             </button>

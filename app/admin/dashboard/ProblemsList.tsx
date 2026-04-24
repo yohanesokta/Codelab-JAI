@@ -202,7 +202,7 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
                             ) : (
                                 <div className="bg-amber-900/20 border border-amber-900/30 p-4 rounded-lg text-amber-500 text-sm flex items-center gap-3">
                                     <span className="material-symbols-outlined">warning</span>
-                                    Tautan singkat tidak tersedia. Pastikan S_ID_AUTH_ID dan S_ID_AUTH_KEY sudah dikonfigurasi.
+                                    Tautan singkat tidak tersedia.
                                 </div>
                             )}
 

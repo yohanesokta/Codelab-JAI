@@ -236,23 +236,3 @@ export async function deleteProblem(id: number) {
     return { success: false, error: 'Internal Server Error' };
   }
 }
-
-export async function regenerateShortLink(id: number) {
-  try {
-    const host = (await headers()).get('host');
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const longUrl = `${protocol}://${host}/problem/${id}`;
-    const shortLink = await generateShortLink(longUrl);
-    
-    if (shortLink) {
-      await db.update(problems).set({ shortLink }).where(eq(problems.id, id));
-      revalidatePath('/admin/dashboard');
-      revalidatePath(`/admin/problem/${id}/edit`);
-      return { success: true, shortLink };
-    }
-    return { success: false, error: 'Gagal membuat tautan singkat' };
-  } catch (error) {
-    console.error('Error regenerating short link:', error);
-    return { success: false, error: 'Internal Server Error' };
-  }
-}
