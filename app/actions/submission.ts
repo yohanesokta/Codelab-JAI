@@ -356,14 +356,16 @@ export async function runTests(data: { problemId: number; code: string }) {
 // Submit
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function autoSubmitOnExpire(data: { nim: string; problemId: number; code: string }) {
+export async function autoSubmitOnExpire(data: { nim: string; problemId: number; code: string; userId?: string }) {
   try {
     await db.insert(submissions).values({
       nim: data.nim,
+      userId: data.userId,
       problemId: data.problemId,
       code: data.code,
       status: 'fail',
     });
+
     revalidatePath('/admin/dashboard');
     revalidatePath(`/admin/problem/${data.problemId}/results`);
     return { success: true, status: 'fail' };
@@ -373,7 +375,7 @@ export async function autoSubmitOnExpire(data: { nim: string; problemId: number;
   }
 }
 
-export async function submitCode(data: { nim: string; problemId: number; code: string }) {
+export async function submitCode(data: { nim: string; problemId: number; code: string; userId?: string }) {
   try {
     const problem = await getProblemById(data.problemId);
     if (!problem) return { success: false, error: 'Soal tidak ditemukan' };
@@ -392,10 +394,12 @@ export async function submitCode(data: { nim: string; problemId: number; code: s
     const finalStatus = testResult.allPassed ? 'pass' : 'fail';
     await db.insert(submissions).values({
       nim: data.nim,
+      userId: data.userId,
       problemId: data.problemId,
       code: data.code,
       status: finalStatus,
     });
+
     revalidatePath('/admin/dashboard');
     return { success: true, status: finalStatus, allPassed: testResult.allPassed };
   } catch (error) {

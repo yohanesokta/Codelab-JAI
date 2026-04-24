@@ -22,7 +22,11 @@ interface EditorClientProps {
   solutionType?: 'function' | 'class' | 'bebas';
   functionName?: string;
   className?: string;
+  userNim?: string;
+  userId?: string;
+  authEnabled?: boolean;
 }
+
 
 function getStarterCode(solutionType?: string, functionName?: string, className?: string): string {
   if (solutionType === 'function') {
@@ -85,7 +89,8 @@ function computePhase(
   return { phase: 'in_progress', effectiveEndTime: null };
 }
 
-export default function EditorClient({ problemId, endTime, duration, timingMode, startTime, solutionType, functionName, className }: EditorClientProps) {
+export default function EditorClient({ problemId, endTime, duration, timingMode, startTime, solutionType, functionName, className, userNim, userId, authEnabled }: EditorClientProps) {
+
   const router = useRouter();
 
   const [reviewModal, setReviewModal] = useState<{
@@ -133,10 +138,11 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
   const [currentStartTime, setCurrentStartTime] = useState<Date | null>(startTime ? new Date(startTime) : null);
 
   const [code, setCode] = useState(() => getStarterCode(solutionType, functionName, className));
-  const [nim, setNim] = useState("");
+  const [nim, setNim] = useState(userNim || "");
   const [tempNim, setTempNim] = useState("");
-  const [isNimLocked, setIsNimLocked] = useState(true);
+  const [isNimLocked, setIsNimLocked] = useState(!userNim);
   const [stdin, setStdin] = useState("");
+
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRunningTests, setIsRunningTests] = useState(false);
@@ -364,8 +370,9 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
     }
     setIsSubmitting(true);
     try {
-      const res = await submitCode({ nim, problemId, code });
+      const res = await submitCode({ nim, problemId, code, userId });
       if (res.success) {
+
         openReviewModal(code, nim, res.allPassed ? 'pass' : 'fail');
       } else {
         alert("Pengiriman jawaban gagal: " + res.error);
@@ -385,8 +392,9 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
     if (nim) {
       setHasAutoSubmitted(true);
       const snapshotCode = code; // capture current code before state changes
-      await autoSubmitOnExpire({ nim, problemId, code: snapshotCode });
+      await autoSubmitOnExpire({ nim, problemId, code: snapshotCode, userId });
       openReviewModal(snapshotCode, nim, 'timeout');
+
       setTimeoutMessage(
         "⏰ Waktu Telah Habis! Jawaban telah dikirimkan otomatis. Halaman kini bersifat baca-saja."
       );

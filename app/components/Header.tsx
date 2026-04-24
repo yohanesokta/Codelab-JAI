@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
-export default function Header() {
+export default function Header({ authEnabled }: { authEnabled?: boolean }) {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
   const isDashboard = pathname === "/";
+  const isAdmin = (session?.user as any)?.role === 'admin';
 
   return (
     <header className="flex justify-between items-center h-12 w-full px-4 sticky top-0 z-50 bg-zinc-900 border-b border-[#333333]">
       <div className="flex items-center gap-6">
-        <span className="text-lg font-bold text-white tracking-tighter">CodeLab JAI</span>
+        <Link href="/" className="text-lg font-bold text-white tracking-tighter">CodeLab JAI</Link>
         <nav className="hidden md:flex items-center h-12 gap-4">
           <a
             className={`${isDashboard ? 'text-white border-b-2 border-[#007acc]' : 'text-zinc-400 hover:text-zinc-200'} h-full flex items-center px-1 transition-colors`}
@@ -18,7 +21,8 @@ export default function Header() {
           >
             Dasbor
           </a>
-          {isDashboard && (
+          {/* Admin Panel visibility logic */}
+          {(!authEnabled || isAdmin) && (
             <a className="text-zinc-400 hover:text-zinc-200 transition-colors h-full flex items-center px-1" href="/admin">
               Panel Admin
             </a>
@@ -50,10 +54,56 @@ export default function Header() {
           Kontribusi
         </a>
 
-        <div className="w-6 h-6 rounded-full overflow-hidden border border-[#333333] bg-zinc-800 flex items-center justify-center text-xs text-white">
-          S
-        </div>
+        {authEnabled && (
+          <div className="flex items-center gap-3 ml-2 border-l border-[#333333] pl-6 h-6">
+            {status === "authenticated" && session?.user ? (
+              <div className="flex items-center gap-3 group relative">
+                <div className="text-right hidden sm:block">
+                  <p className="text-[10px] text-white font-bold leading-none">{session.user.name || session.user.email}</p>
+                  <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider">{(session.user as any).role}</p>
+                </div>
+                <button className="w-7 h-7 rounded-full overflow-hidden border border-[#007acc] bg-zinc-800 flex items-center justify-center text-[10px] text-white font-bold shadow-lg shadow-[#007acc]/10">
+                  {session.user.image ? (
+                    <img src={session.user.image} alt={session.user.name || ""} className="w-full h-full object-cover" />
+                  ) : (
+                    (session.user.name?.[0] || session.user.email?.[0] || "U").toUpperCase()
+                  )}
+                </button>
+                
+                {/* Simple Tooltip/Dropdown Menu */}
+                <div className="absolute right-0 top-full mt-2 w-48 bg-[#252526] border border-[#333333] rounded shadow-2xl py-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all z-50">
+                  <div className="px-4 py-2 border-b border-[#333333] mb-1">
+                    <p className="text-xs text-white font-bold truncate">{session.user.email}</p>
+                    <p className="text-[9px] text-zinc-500 font-mono mt-1">NIM: {(session.user as any).nim || 'Belum diatur'}</p>
+                  </div>
+                  <button 
+                    onClick={() => signOut()}
+                    className="w-full text-left px-4 py-2 text-xs text-red-400 hover:bg-red-900/10 transition-colors flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-sm">logout</span>
+                    Keluar Sesi
+                  </button>
+                </div>
+              </div>
+            ) : status !== "authenticated" ? (
+              <Link 
+                href="/auth/login" 
+                className="bg-[#007acc] text-white px-4 py-1 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-[#005f9e] transition-all"
+              >
+                Masuk
+              </Link>
+            ) : null}
+          </div>
+        )}
+
+
+        {!authEnabled && (
+           <div className="w-6 h-6 rounded-full overflow-hidden border border-[#333333] bg-zinc-800 flex items-center justify-center text-xs text-white">
+            S
+          </div>
+        )}
       </div>
     </header>
   );
 }
+

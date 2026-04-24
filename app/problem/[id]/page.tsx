@@ -11,9 +11,14 @@ const SOLUTION_TYPE_META: Record<string, { label: string; color: string; icon: s
   bebas:    { label: 'Bebas',    color: 'text-purple-400 bg-purple-900/20 border-purple-600/40', icon: 'terminal' },
 };
 
+import { isAuthEnabled } from "@/lib/config";
+import { auth } from "@/auth";
+
 export default async function ProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const problem = await getProblemById(parseInt(id));
+  const authEnabled = isAuthEnabled();
+  const session = authEnabled ? await auth() : null;
 
   if (!problem) {
     notFound();
@@ -24,7 +29,7 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
 
   return (
     <>
-      <Header />
+      <Header authEnabled={authEnabled} />
       <div className="flex h-[calc(100vh-48px)] overflow-hidden">
         <main className="flex-1 p-0 overflow-hidden">
           <div className="flex h-full flex-col lg:flex-row overflow-hidden">
@@ -111,6 +116,9 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
                 solutionType={solutionType as 'function' | 'class' | 'bebas'}
                 functionName={problem.functionName || undefined}
                 className={problem.className || undefined}
+                userNim={(session?.user as any)?.nim}
+                userId={session?.user?.id}
+                authEnabled={authEnabled}
               />
             </div>
           </div>
@@ -119,3 +127,4 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
     </>
   );
 }
+

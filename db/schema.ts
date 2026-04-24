@@ -30,9 +30,53 @@ export const testCases = mysqlTable('test_cases', {
   input: text('input'),
 });
 
+export const users = mysqlTable('users', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  name: varchar('name', { length: 255 }),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  emailVerified: timestamp('email_verified', { mode: 'date' }),
+  image: varchar('image', { length: 255 }),
+  password: varchar('password', { length: 255 }),
+  nim: varchar('nim', { length: 50 }),
+  role: varchar('role', { length: 20 }).default('student').notNull(), // 'student', 'admin', 'pending_admin'
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const accounts = mysqlTable('accounts', {
+  userId: varchar('userId', { length: 255 })
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  type: varchar('type', { length: 255 }).notNull(),
+  provider: varchar('provider', { length: 255 }).notNull(),
+  providerAccountId: varchar('providerAccountId', { length: 255 }).notNull(),
+  refresh_token: text('refresh_token'),
+  access_token: text('access_token'),
+  expires_at: int('expires_at'),
+  token_type: varchar('token_type', { length: 255 }),
+  scope: varchar('scope', { length: 255 }),
+  id_token: text('id_token'),
+  session_state: varchar('session_state', { length: 255 }),
+}, (account) => [
+  {
+    provider_providerAccountId: (account.provider, account.providerAccountId),
+  }
+]);
+
+export const adminRequests = mysqlTable('admin_requests', {
+  id: int('id').autoincrement().primaryKey(),
+  userId: varchar('user_id', { length: 255 })
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  reason: text('reason').notNull(),
+  status: varchar('status', { length: 20 }).default('pending').notNull(), // 'pending', 'approved', 'rejected'
+  reviewedBy: varchar('reviewed_by', { length: 255 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const submissions = mysqlTable('submissions', {
   id: int('id').autoincrement().primaryKey(),
   nim: varchar('nim', { length: 50 }).notNull(),
+  userId: varchar('user_id', { length: 255 }), // Nullable for guest users
   problemId: int('problem_id')
     .notNull()
     .references(() => problems.id, { onDelete: 'cascade' }),
@@ -40,3 +84,4 @@ export const submissions = mysqlTable('submissions', {
   status: varchar('status', { length: 50 }).notNull(), // 'pass', 'fail', 'error', 'pending'
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+

@@ -6,14 +6,18 @@ import ReactMarkdown from "react-markdown";
 
 export const dynamic = 'force-dynamic';
 
+import { isAuthEnabled } from "@/lib/config";
+
 export default async function Home() {
   const problems = await getProblems();
+  const authEnabled = isAuthEnabled();
 
   return (
     <>
-      <Header />
+      <Header authEnabled={authEnabled} />
       <div className="flex min-h-[calc(100vh-48px)]">
-        <Sidebar className="hidden md:flex" />
+        <Sidebar className="hidden md:flex" authEnabled={authEnabled} />
+
         <main className="flex-1 md:ml-64 p-6 bg-[#1e1e1e]">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-8">
