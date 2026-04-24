@@ -1,4 +1,4 @@
-# EXAMPLE.md — Panduan Membuat Soal di CodeLab JAI
+# Panduan Membuat Soal di CodeLab JAI
 
 Dokumen ini menjelaskan cara membuat soal untuk setiap tipe solusi yang tersedia.
 Semua kasus pengujian ditulis dalam Python dan **terlihat** oleh mahasiswa (tidak ada hidden test).

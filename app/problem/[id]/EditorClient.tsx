@@ -84,6 +84,44 @@ function computePhase(
 export default function EditorClient({ problemId, endTime, duration, timingMode, startTime, solutionType, functionName, className }: EditorClientProps) {
   const router = useRouter();
 
+  const [reviewModal, setReviewModal] = useState<{
+    code: string;
+    nim: string;
+    status: 'pass' | 'fail' | 'timeout';
+  } | null>(null);
+  const [reviewTestResults, setReviewTestResults] = useState<any[]>([]);
+  const [reviewAllPassed, setReviewAllPassed] = useState(false);
+  const [isRunningReviewTests, setIsRunningReviewTests] = useState(false);
+  const [reviewTestError, setReviewTestError] = useState<string | null>(null);
+  const [reviewHasRunTests, setReviewHasRunTests] = useState(false);
+
+  const openReviewModal = (submittedCode: string, submittedNim: string, status: 'pass' | 'fail' | 'timeout') => {
+    setReviewModal({ code: submittedCode, nim: submittedNim, status });
+    setReviewTestResults([]);
+    setReviewAllPassed(false);
+    setReviewTestError(null);
+    setReviewHasRunTests(false);
+  };
+
+  const handleRunReviewTests = async (codeToTest: string) => {
+    setIsRunningReviewTests(true);
+    setReviewTestError(null);
+    try {
+      const res = await runTests({ problemId, code: codeToTest });
+      if (res.success) {
+        setReviewTestResults(res.testResults || []);
+        setReviewAllPassed(res.allPassed || false);
+        setReviewHasRunTests(true);
+      } else {
+        setReviewTestError(res.error || 'Gagal menjalankan pengujian.');
+      }
+    } catch {
+      setReviewTestError('Kesalahan jaringan saat menjalankan pengujian.');
+    } finally {
+      setIsRunningReviewTests(false);
+    }
+  };
+
   const initial = computePhase(timingMode, startTime, endTime, duration);
 
   const [phase, setPhase] = useState<ProblemPhase>(initial.phase);
@@ -314,8 +352,7 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
     try {
       const res = await submitCode({ nim, problemId, code });
       if (res.success) {
-        alert("Jawaban berhasil dikirimkan! Mengalihkan ke halaman utama...");
-        router.push('/');
+        openReviewModal(code, nim, res.allPassed ? 'pass' : 'fail');
       } else {
         alert("Pengiriman jawaban gagal: " + res.error);
       }
@@ -333,9 +370,11 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
 
     if (nim) {
       setHasAutoSubmitted(true);
-      await autoSubmitOnExpire({ nim, problemId, code });
+      const snapshotCode = code; // capture current code before state changes
+      await autoSubmitOnExpire({ nim, problemId, code: snapshotCode });
+      openReviewModal(snapshotCode, nim, 'timeout');
       setTimeoutMessage(
-        "⏰ Waktu Telah Habis! Jawaban Anda saat ini telah dikirimkan secara otomatis (status: gagal). Halaman kini bersifat baca-saja."
+        "⏰ Waktu Telah Habis! Jawaban telah dikirimkan otomatis. Halaman kini bersifat baca-saja."
       );
     } else {
       if (timingMode === 'manual') {
@@ -867,6 +906,218 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Review Modal ───────────────────────────────────────────────── */}
+      {reviewModal && (
+        <div className="fixed inset-0 z-[200] bg-[#1e1e1e] flex flex-col">
+          {/* Modal top bar */}
+          <div className="flex-shrink-0 flex items-center justify-between bg-[#252526] border-b border-[#333333] px-4 py-2 gap-3">
+            {/* Left: file badge + nim */}
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-white text-xs font-mono bg-[#1e1e1e] border border-[#333333] px-3 py-1 rounded flex items-center gap-2 flex-shrink-0">
+                <span className="material-symbols-outlined text-[14px] text-amber-400">lock</span>
+                main.py
+                <span className="text-[10px] text-amber-500 font-bold uppercase">[Baca Saja]</span>
+              </span>
+              <div className="text-xs text-zinc-500 font-mono truncate">
+                NIM: <span className="text-zinc-300">{reviewModal.nim}</span>
+              </div>
+            </div>
+
+            {/* Center: status badge */}
+            <div className="flex items-center gap-2">
+              {reviewModal.status === 'pass' && (
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-900/20 border border-green-700/40">
+                  <span className="material-symbols-outlined text-base text-green-400">check_circle</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-green-300">Jawaban Berhasil</span>
+                </div>
+              )}
+              {reviewModal.status === 'fail' && (
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-900/20 border border-red-700/40">
+                  <span className="material-symbols-outlined text-base text-red-400">cancel</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-red-300">Jawaban Gagal</span>
+                </div>
+              )}
+              {reviewModal.status === 'timeout' && (
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-900/20 border border-orange-700/40">
+                  <span className="material-symbols-outlined text-base text-orange-400">timer_off</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-orange-300">Waktu Habis</span>
+                </div>
+              )}
+            </div>
+
+            {/* Right: actions */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => handleRunReviewTests(reviewModal.code)}
+                disabled={isRunningReviewTests}
+                className="bg-[#333333] text-white px-3 py-1 rounded text-xs font-semibold hover:bg-[#444444] transition-colors flex items-center gap-2 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-sm">fact_check</span>
+                {isRunningReviewTests ? 'Sedang Menguji...' : 'Uji Ulang'}
+              </button>
+
+              <button
+                onClick={() => { setReviewModal(null); router.push('/'); }}
+                className="bg-[#007acc] hover:bg-[#005f9e] text-white px-3 py-1 rounded text-xs font-semibold transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">home</span>
+                Selesai
+              </button>
+
+              <button
+                onClick={() => setReviewModal(null)}
+                title="Tutup tinjauan"
+                className="text-zinc-500 hover:text-zinc-200 transition-colors p-1"
+              >
+                <span className="material-symbols-outlined text-lg">close</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Modal body: editor + test results side by side */}
+          <div className="flex-1 flex min-h-0 overflow-hidden">
+            {/* Code editor — read only, takes most of the space */}
+            <div className={`flex flex-col min-h-0 overflow-hidden ${reviewTestResults.length > 0 || reviewTestError || isRunningReviewTests ? 'w-1/2 border-r border-[#333333]' : 'flex-1'}`}>
+              <div className="flex-shrink-0 flex items-center gap-2 bg-[#2d2d2d] border-b border-[#333333] px-4 py-1.5">
+                <span className="material-symbols-outlined text-sm text-zinc-500">description</span>
+                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Kode Mahasiswa — Tinjauan</span>
+              </div>
+              <div className="flex-1 min-h-0">
+                <Editor
+                  height="100%"
+                  defaultLanguage="python"
+                  theme="vs-dark"
+                  value={reviewModal.code}
+                  options={{
+                    fontSize: 14,
+                    minimap: { enabled: false },
+                    automaticLayout: true,
+                    scrollBeyondLastLine: false,
+                    readOnly: true,
+                    domReadOnly: true,
+                    padding: { top: 16, bottom: 16 },
+                    fontFamily: "'Fira Code', 'Courier New', monospace",
+                    fontLigatures: true,
+                    cursorStyle: 'line',
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Test results panel — only shown after running tests */}
+            {(reviewTestResults.length > 0 || reviewTestError || isRunningReviewTests) && (
+              <div className="w-1/2 flex flex-col min-h-0 overflow-hidden bg-[#1e1e1e]">
+                <div className="flex-shrink-0 flex items-center justify-between bg-[#252526] border-b border-[#333333] px-4 py-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-sm text-zinc-500">fact_check</span>
+                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+                      Hasil Pengujian {reviewTestResults.length > 0 && `(${reviewTestResults.filter(r => r.passed).length}/${reviewTestResults.length})`}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => { setReviewTestResults([]); setReviewTestError(null); setReviewHasRunTests(false); }}
+                    className="text-zinc-600 hover:text-zinc-300 transition-colors"
+                    title="Reset hasil"
+                  >
+                    <span className="material-symbols-outlined text-sm">block</span>
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                  {isRunningReviewTests && (
+                    <div className="flex items-center justify-center h-full gap-3 text-zinc-500">
+                      <span className="material-symbols-outlined animate-spin">sync</span>
+                      <span className="text-sm">Menjalankan pengujian...</span>
+                    </div>
+                  )}
+
+                  {reviewTestError && !isRunningReviewTests && (
+                    <div className="p-4">
+                      <div className="bg-red-900/20 border border-red-900 text-red-500 p-3 rounded font-mono text-xs whitespace-pre-wrap">
+                        {reviewTestError}
+                      </div>
+                    </div>
+                  )}
+
+                  {!isRunningReviewTests && reviewTestResults.length > 0 && (
+                    <div className="p-4 space-y-3">
+                      {/* Summary */}
+                      <div className={`px-4 py-3 rounded-lg border ${reviewAllPassed ? 'bg-green-900/20 border-green-700/40' : 'bg-red-900/10 border-red-700/40'}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className={`material-symbols-outlined text-lg ${reviewAllPassed ? 'text-green-400' : 'text-red-400'}`}>
+                              {reviewAllPassed ? 'check_circle' : 'cancel'}
+                            </span>
+                            <span className="text-sm font-bold text-white">
+                              {reviewTestResults.filter(r => r.passed).length} / {reviewTestResults.length} lulus
+                            </span>
+                          </div>
+                          <div className="flex gap-1">
+                            {reviewTestResults.map((r, i) => (
+                              <div key={i} className={`w-6 h-6 rounded text-[10px] font-bold flex items-center justify-center ${r.passed ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                                {i + 1}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="w-full bg-[#333333] rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${reviewAllPassed ? 'bg-green-500' : 'bg-red-500'}`}
+                            style={{ width: `${(reviewTestResults.filter(r => r.passed).length / reviewTestResults.length) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Individual results */}
+                      {reviewTestResults.map((result, idx) => (
+                        <div key={idx} className={`border rounded-lg overflow-hidden ${result.passed ? 'bg-green-900/10 border-green-900/40' : 'bg-red-900/10 border-red-900/40'}`}>
+                          <div className={`flex items-center gap-3 px-3 py-2 border-b ${result.passed ? 'border-green-900/30 bg-green-900/20' : 'border-red-900/30 bg-red-900/20'}`}>
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${result.passed ? 'bg-green-600' : 'bg-red-600'}`}>
+                              <span className="material-symbols-outlined text-white" style={{ fontSize: '14px' }}>{result.passed ? 'check' : 'close'}</span>
+                            </div>
+                            <span className="text-xs font-bold text-white flex-1">Kasus #{idx + 1}</span>
+                            <span className={`text-[10px] font-bold uppercase tracking-widest ${result.passed ? 'text-green-400' : 'text-red-400'}`}>
+                              {result.passed ? '✓ Lulus' : '✗ Gagal'}
+                            </span>
+                          </div>
+                          {result.testScript && (
+                            <details className="px-3 pt-2 pb-1">
+                              <summary className="text-[10px] text-zinc-500 cursor-pointer hover:text-zinc-300 transition-colors select-none flex items-center gap-1">
+                                <span className="material-symbols-outlined" style={{ fontSize: '11px' }}>code</span>
+                                Lihat skrip pengujian
+                              </summary>
+                              <pre className="mt-2 bg-black/30 p-2 rounded text-[10px] text-green-300 font-mono whitespace-pre-wrap overflow-x-auto border border-[#333333]">{result.testScript}</pre>
+                            </details>
+                          )}
+                          {result.passed && result.actualOutput && (
+                            <div className="px-3 pb-3 pt-1">
+                              <span className="text-[10px] text-zinc-500 block mb-1">Output:</span>
+                              <div className="text-[11px] font-mono text-green-300 bg-black/20 p-2 rounded overflow-x-auto whitespace-pre border border-green-900/20">{result.actualOutput || '(tidak ada output)'}</div>
+                            </div>
+                          )}
+                          {!result.passed && result.error && (
+                            <div className="px-3 pb-3 pt-1">
+                              <span className="text-[10px] text-zinc-500 block mb-1">Error:</span>
+                              <div className="text-[11px] font-mono text-red-400 bg-black/40 p-2 rounded overflow-x-auto whitespace-pre-wrap">{result.error}</div>
+                            </div>
+                          )}
+                          {!result.passed && result.actualOutput && (
+                            <div className="px-3 pb-3">
+                              <span className="text-[10px] text-zinc-500 block mb-1">Output yang Dihasilkan:</span>
+                              <div className="text-[11px] font-mono text-zinc-300 bg-black/40 p-2 rounded overflow-x-auto whitespace-pre">{result.actualOutput}</div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
