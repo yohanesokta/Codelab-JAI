@@ -15,6 +15,8 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Coding Assignment Portal",
   description: "A platform for solving daily coding challenges",
+  icons: {
+  }
 };
 
 export default function RootLayout({
