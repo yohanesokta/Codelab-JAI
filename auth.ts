@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db";
@@ -7,32 +6,28 @@ import { users, accounts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { isAuthEnabled } from "./lib/config";
+import { authConfig } from "./auth.config";
 
-export const { handlers, auth, signIn, signOut } = NextAuth(() => {
+export const { handlers, auth, signIn, signOut } = NextAuth((request) => {
   if (!isAuthEnabled()) {
-    // If auth is disabled, return a skeleton config to avoid errors
     return {
+      ...authConfig,
       providers: [],
       adapter: DrizzleAdapter(db, {
         usersTable: users,
         accountsTable: accounts,
       }),
-      session: { strategy: "jwt" },
-      callbacks: {},
     };
   }
 
   return {
+    ...authConfig,
     adapter: DrizzleAdapter(db, {
       usersTable: users,
       accountsTable: accounts,
     }),
-    session: { strategy: "jwt" },
     providers: [
-      Google({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      }),
+      ...authConfig.providers,
       Credentials({
         name: "Credentials",
         credentials: {
@@ -67,32 +62,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
         },
       }),
     ],
-    callbacks: {
-      async jwt({ token, user, trigger, session }) {
-        if (user) {
-          token.id = user.id;
-          token.nim = (user as any).nim;
-          token.role = (user as any).role;
-        }
-        // Support updating session on the fly (e.g. after registration or admin approval)
-        if (trigger === "update" && session) {
-          token.nim = session.nim ?? token.nim;
-          token.role = session.role ?? token.role;
-        }
-        return token;
-      },
-      async session({ session, token }) {
-        if (token) {
-          session.user.id = token.id as string;
-          (session.user as any).nim = token.nim;
-          (session.user as any).role = token.role;
-        }
-        return session;
-      },
-    },
-    pages: {
-      signIn: "/auth/login",
-      error: "/auth/error",
-    },
   };
 });

@@ -1,3 +1,3 @@
 export function isAuthEnabled() {
-  return process.env.APP_USING_AUTH === 'true';
+  return process.env.NEXT_PUBLIC_APP_USING_AUTH === 'true';
 }
