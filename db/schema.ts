@@ -103,3 +103,10 @@ export const links = mysqlTable('links', {
   longUrl: text('long_url').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+// New table for global settings (like notifications)
+export const settings = mysqlTable('settings', {
+  key: varchar('key', { length: 255 }).primaryKey(),
+  value: text('value').notNull(), // JSON string for complex objects
+  updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
+});

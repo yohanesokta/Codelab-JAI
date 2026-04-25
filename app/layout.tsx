@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import NotificationBanner from "./components/NotificationBanner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -77,10 +78,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-full font-body-main text-on-surface custom-scrollbar overflow-x-hidden bg-[#1e1e1e]">
         <AuthProvider>
+          <NotificationBanner />
           {children}
         </AuthProvider>
       </body>
     </html>
   );
 }
-

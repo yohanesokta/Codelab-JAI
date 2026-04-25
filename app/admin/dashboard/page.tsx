@@ -6,6 +6,7 @@ import Link from "next/link";
 import { auth as getAuth } from "@/auth";
 import { isAuthEnabled } from "@/lib/config";
 import { getAllAdmins, demoteAdmin } from "@/app/actions/auth";
+import NotificationManager from "./NotificationManager";
 
 export const dynamic = 'force-dynamic';
 
@@ -55,43 +56,49 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        {user?.role === 'superadmin' && admins.length > 0 && (
-          <div className="mb-12 bg-[#2d2d2d] border border-[#333333] rounded-lg p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-yellow-500">shield_person</span>
-              Manajemen Admin
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-[#333333]">
-                    <th className="py-2 text-zinc-400 font-medium">Nama</th>
-                    <th className="py-2 text-zinc-400 font-medium">Email</th>
-                    <th className="py-2 text-zinc-400 font-medium">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {admins.map((admin) => (
-                    <tr key={admin.id} className="border-b border-[#333333]/50">
-                      <td className="py-3 text-white">{admin.name}</td>
-                      <td className="py-3 text-zinc-300">{admin.email}</td>
-                      <td className="py-3">
-                        <form action={async () => {
-                          'use server';
-                          await demoteAdmin(admin.id);
-                        }}>
-                          <button className="text-red-500 hover:text-red-400 text-sm flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">person_remove</span>
-                            Jadikan User Biasa
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+        {user?.role === 'superadmin' && (
+          <>
+            <NotificationManager />
+            
+            {admins.length > 0 && (
+              <div className="mb-12 bg-[#2d2d2d] border border-[#333333] rounded-lg p-6">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-yellow-500">shield_person</span>
+                  Manajemen Admin
+                </h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="border-b border-[#333333]">
+                        <th className="py-2 text-zinc-400 font-medium">Nama</th>
+                        <th className="py-2 text-zinc-400 font-medium">Email</th>
+                        <th className="py-2 text-zinc-400 font-medium">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {admins.map((admin) => (
+                        <tr key={admin.id} className="border-b border-[#333333]/50">
+                          <td className="py-3 text-white">{admin.name}</td>
+                          <td className="py-3 text-zinc-300">{admin.email}</td>
+                          <td className="py-3">
+                            <form action={async () => {
+                              'use server';
+                              await demoteAdmin(admin.id);
+                            }}>
+                              <button className="text-red-500 hover:text-red-400 text-sm flex items-center gap-1">
+                                <span className="material-symbols-outlined text-sm">person_remove</span>
+                                Jadikan User Biasa
+                              </button>
+                            </form>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         <div className="grid grid-cols-1 gap-8">
