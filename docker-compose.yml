@@ -2,10 +2,9 @@ services:
   db:
     image: mariadb:10.11
     restart: always
+    network_mode: host
     env_file:
       - .env
-    ports:
-      - '3306:3306'
     volumes:
       - mariadb_data:/var/lib/mysql
 
@@ -13,20 +12,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
+    network_mode: host
     env_file:
       - .env
     depends_on:
       - db
-      - shortlink
 
   shortlink:
     build:
       context: ./shortlink-service
       dockerfile: Dockerfile
-    ports:
-      - '3001:3001'
+    network_mode: host
     env_file:
       - .env
     depends_on:
