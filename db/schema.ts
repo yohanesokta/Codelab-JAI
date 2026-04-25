@@ -86,3 +86,9 @@ export const submissions = mysqlTable('submissions', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const links = mysqlTable('links', {
+  id: varchar('id', { length: 20 }).primaryKey(), // The short path (slug)
+  longUrl: text('long_url').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+

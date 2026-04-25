@@ -192,17 +192,27 @@ export default function ProblemsList({ problems }: ProblemsListProps) {
 
                         <div className="space-y-8">
                             {shareModal.shortLink ? (
-                                <div className="text-center space-y-10">
-                                    <div className="bg-[#1e1e1e] p-20 rounded-xl border border-green-600/30 group relative">
-                                        <div style={{fontSize : "72pt"}} className="font-black text-green-500 font-mono break-all">
-                                            {shareModal.shortLink.replace('https://', '')}
+                                <div className="text-center space-y-4">
+                                    <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest">Custom Shortlink</p>
+                                    <div className="bg-[#1e1e1e] p-10 rounded-xl border border-green-600/30 group relative">
+                                        <div style={{fontSize : "42pt"}} className="font-black text-green-500 font-mono break-all leading-none">
+                                            {shareModal.shortLink.replace('http://', '').replace('https://', '')}
                                         </div>
+                                        <button 
+                                            onClick={() => copyToClipboard(shareModal.shortLink!, shareModal.id)}
+                                            className="mt-10 flex items-center gap-2 mx-auto px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-all active:scale-95 shadow-lg shadow-green-900/20"
+                                        >
+                                            <span className="material-symbols-outlined text-sm">
+                                                {copiedId === shareModal.id ? 'check' : 'content_copy'}
+                                            </span>
+                                            {copiedId === shareModal.id ? 'Tersalin!' : 'Salin Tautan Singkat'}
+                                        </button>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="bg-amber-900/20 border border-amber-900/30 p-4 rounded-lg text-amber-500 text-sm flex items-center gap-3">
                                     <span className="material-symbols-outlined">warning</span>
-                                    Tautan singkat tidak tersedia.
+                                    Tautan singkat tidak tersedia. Pastikan APP_URL dan SHORTLINK_URL sudah dikonfigurasi.
                                 </div>
                             )}
 

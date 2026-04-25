@@ -6,34 +6,32 @@ import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 
-async function generateShortLink(longUrl: string) {
-  const authId = process.env.S_ID_AUTH_ID;
-  const authKey = process.env.S_ID_AUTH_KEY;
-
-  if (!authId || !authKey) {
-    console.warn('S_ID_AUTH_ID or S_ID_AUTH_KEY not set, skipping short link generation');
-    return null;
-  }
+async function generateShortLink(id: number, customSlug?: string | null) {
+  const shortlinkBaseUrl = process.env.SHORTLINK_URL || 'http://localhost:3001';
+  const appBaseUrl = process.env.APP_URL || 'http://localhost:3000';
+  
+  const longUrl = `${appBaseUrl}/problem/${id}`;
 
   try {
-    const response = await fetch('https://api.s.id/v1/links', {
+    const response = await fetch(`${shortlinkBaseUrl}/links`, {
       method: 'POST',
       headers: {
-        'X-Auth-Id': authId,
-        'X-Auth-Key': authKey,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ long_url: longUrl }),
+      body: JSON.stringify({ 
+        id: customSlug || undefined, // If undefined, service generates random 4-char slug
+        long_url: longUrl 
+      }),
     });
 
-    const result = await response.json();
-    if (result.code === 200 && result.data && result.data.short) {
-      return `https://s.id/${result.data.short}`;
+    if (response.ok) {
+      const result = await response.json();
+      return result.short_url; // Service returns the full short URL
     }
-    console.error('Failed to generate short link from s.id:', result);
+    console.error('Failed to create internal shortlink:', await response.text());
     return null;
   } catch (error) {
-    console.error('Error calling s.id API:', error);
+    console.error('Error calling shortlink service:', error);
     return null;
   }
 }
@@ -96,12 +94,9 @@ export async function createProblem(data: ProblemInput) {
     
     const insertedId = (result as any).insertId;
 
-    // Generate short link
+    // Generate random short link
     try {
-      const host = (await headers()).get('host');
-      const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-      const longUrl = `${protocol}://${host}/problem/${insertedId}`;
-      const shortLink = await generateShortLink(longUrl);
+      const shortLink = await generateShortLink(insertedId); // No slug passed = random
       if (shortLink) {
         await db.update(problems).set({ shortLink }).where(eq(problems.id, insertedId));
       }
@@ -133,18 +128,33 @@ export async function createProblem(data: ProblemInput) {
 
 export async function updateProblem(id: number, data: ProblemInput) {
   try {
-    // Check if short link exists, if not generate one
-    const [existing] = await db.select({ shortLink: problems.shortLink }).from(problems).where(eq(problems.id, id));
-    let shortLink = existing?.shortLink;
+    let finalShortLink = data.shortLink;
 
-    if (!shortLink) {
+    if (finalShortLink && finalShortLink.trim() !== "") {
+      // If manually updated/provided, sync it to the shortlink-service
       try {
-        const host = (await headers()).get('host');
-        const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-        const longUrl = `${protocol}://${host}/problem/${id}`;
-        shortLink = await generateShortLink(longUrl);
+        // Extract slug: can be full URL or just the slug
+        const slug = finalShortLink.split('/').pop();
+        if (slug) {
+          const syncedUrl = await generateShortLink(id, slug);
+          if (syncedUrl) {
+            finalShortLink = syncedUrl;
+          }
+        }
       } catch (err) {
-        console.error('Error generating short link during update:', err);
+        console.error('Error syncing manual short link:', err);
+      }
+    } else {
+      // If no short link provided in data, check existing or generate
+      const [existing] = await db.select({ shortLink: problems.shortLink }).from(problems).where(eq(problems.id, id));
+      finalShortLink = existing?.shortLink;
+
+      if (!finalShortLink) {
+        try {
+          finalShortLink = await generateShortLink(id);
+        } catch (err) {
+          console.error('Error generating random short link during update:', err);
+        }
       }
     }
 
@@ -159,7 +169,7 @@ export async function updateProblem(id: number, data: ProblemInput) {
       solutionType: data.solutionType,
       functionName: data.functionName || null,
       className: data.className || null,
-      shortLink: shortLink || null,
+      shortLink: finalShortLink || null,
     }).where(eq(problems.id, id));
     
     // Replace test cases: delete then re-insert
