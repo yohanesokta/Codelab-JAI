@@ -14,6 +14,26 @@ export default async function Home() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Coding Assignment Portal",
+            "url": process.env.APP_URL || 'http://localhost:3000',
+            "description": "Platform tantangan pemrograman harian untuk meningkatkan skill coding.",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": `${process.env.APP_URL || 'http://localhost:3000'}/?q={search_term_string}`
+              },
+              "query-input": "required name=search_term_string"
+            }
+          }),
+        }}
+      />
       <Header authEnabled={authEnabled} />
       <div className="flex min-h-[calc(100vh-48px)]">
         <Sidebar className="hidden md:flex" authEnabled={authEnabled} />

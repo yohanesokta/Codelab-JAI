@@ -14,6 +14,33 @@ const SOLUTION_TYPE_META: Record<string, { label: string; color: string; icon: s
 import { isAuthEnabled } from "@/lib/config";
 import { auth } from "@/auth";
 
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const problem = await getProblemById(parseInt(id));
+
+  if (!problem) {
+    return {
+      title: "Soal Tidak Ditemukan",
+    };
+  }
+
+  return {
+    title: problem.title,
+    description: problem.description.substring(0, 160),
+    alternates: {
+      canonical: `/problem/${id}`,
+    },
+    openGraph: {
+      title: `${problem.title} | Coding Assignment Portal`,
+      description: problem.description.substring(0, 160),
+      type: "article",
+      url: `/problem/${id}`,
+    },
+  };
+}
+
 export default async function ProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const problem = await getProblemById(parseInt(id));
@@ -29,6 +56,26 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": problem.title,
+            "description": problem.description.substring(0, 160),
+            "author": {
+              "@type": "Organization",
+              "name": "Coding Assignment Portal"
+            },
+            "datePublished": problem.createdAt,
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `${process.env.APP_URL || 'http://localhost:3000'}/problem/${problem.id}`
+            }
+          }),
+        }}
+      />
       <Header authEnabled={authEnabled} />
       <div className="flex h-[calc(100vh-48px)] overflow-hidden">
         <main className="flex-1 p-0 overflow-hidden">

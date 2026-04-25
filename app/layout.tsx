@@ -13,10 +13,50 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Coding Assignment Portal",
-  description: "A platform for solving daily coding challenges",
-  icons: {
-  }
+  metadataBase: new URL(process.env.APP_URL || 'http://localhost:3000'),
+  title: {
+    default: "Coding Assignment Portal",
+    template: "%s | Coding Assignment Portal",
+  },
+  description: "A platform for solving daily coding challenges and improving your programming skills.",
+  keywords: ["coding", "programming", "challenges", "assignment", "developer"],
+  authors: [{ name: "Coding Assignment Team" }],
+  creator: "Coding Assignment Team",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "/",
+    siteName: "Coding Assignment Portal",
+    title: "Coding Assignment Portal",
+    description: "Selesaikan tantangan pemrograman harian dan asah kemampuan coding Anda.",
+    images: [
+      {
+        url: "/next.svg", // Fallback image
+        width: 800,
+        height: 600,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Coding Assignment Portal",
+    description: "Selesaikan tantangan pemrograman harian dan asah kemampuan coding Anda.",
+    images: ["/next.svg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 import { AuthProvider } from "./components/providers/AuthProvider";
@@ -28,7 +68,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="id"
       className={`${inter.variable} ${spaceGrotesk.variable} dark antialiased`}
     >
       <head>
