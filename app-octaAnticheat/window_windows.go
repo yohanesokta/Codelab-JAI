@@ -52,10 +52,8 @@ func getActiveWindowTitle() string {
 		return "No Active Window"
 	}
 
-	// Get Process Name first as it's often more reliable
 	processName := getProcessName(hwnd)
 
-	// Try to get Window Title
 	b := make([]uint16, 512)
 	ret, _, _ := getWindowText.Call(hwnd, uintptr(unsafe.Pointer(&b[0])), uintptr(len(b)))
 	

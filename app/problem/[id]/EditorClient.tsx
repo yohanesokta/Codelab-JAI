@@ -197,7 +197,7 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
     const checkComponents = async () => {
       // Check Go App via fetch
       try {
-        const res = await fetch("http://localhost:9012/ping", { signal: AbortSignal.timeout(1000) });
+        const res = await fetch("http://127.0.0.1:9012/ping", { signal: AbortSignal.timeout(1000) });
         if (res.ok) setIsGoAppRunning(true);
         else setIsGoAppRunning(false);
       } catch (e) {
@@ -226,7 +226,7 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
 
     if (isGoAppRunning) {
       try {
-        const res = await fetch("http://localhost:9012/status", { signal: AbortSignal.timeout(1000) });
+        const res = await fetch("http://127.0.0.1:9012/status", { signal: AbortSignal.timeout(1000) });
         if (res.ok) {
           const data = await res.json();
           activeWindow = data.active_window || "Unknown";
