@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import { isAuthEnabled } from "./lib/config";
 
 export const authConfig = {
+  trustHost: true,
   session: { strategy: "jwt" },
   providers: [
     Google({
@@ -14,20 +15,20 @@ export const authConfig = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.nim = (user as any).nim;
-        token.role = (user as any).role;
+        token.nim = (user as any).nim || "";
+        token.role = (user as any).role || "user";
       }
       if (trigger === "update" && session) {
-        token.nim = session.nim ?? token.nim;
-        token.role = session.role ?? token.role;
+        if (session.nim !== undefined) token.nim = session.nim;
+        if (session.role !== undefined) token.role = session.role;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user.id = token.id as string;
-        (session.user as any).nim = token.nim;
-        (session.user as any).role = token.role;
+        (session.user as any).nim = token.nim as string;
+        (session.user as any).role = token.role as string;
       }
       return session;
     },

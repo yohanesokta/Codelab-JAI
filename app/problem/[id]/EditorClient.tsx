@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { submitCode, runTests, runCode, stopCode, autoSubmitOnExpire, getExecutionStatus, sendStdin, logCheatEvent } from "@/app/actions/submission";
 import { getProblemStatus } from "@/app/actions/problem";
 import { updateUserNim } from "@/app/actions/auth";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Timer from "../../components/Timer";
 import Editor from '@monaco-editor/react';
@@ -94,6 +95,7 @@ function computePhase(
 export default function EditorClient({ problemId, endTime, duration, timingMode, startTime, solutionType, functionName, className, userNim, userId, authEnabled, antiCheatEnabled }: EditorClientProps) {
 
   const router = useRouter();
+  const { update } = useSession();
 
   const [isGoAppRunning, setIsGoAppRunning] = useState(false);
   const [checkingComponents, setCheckingComponents] = useState(antiCheatEnabled);
@@ -410,7 +412,9 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
     if (authEnabled && !userNim) {
       try {
         const res = await updateUserNim(tempNim);
-        if (res.error) {
+        if (res.success) {
+          await update({ nim: tempNim });
+        } else {
           alert(res.error);
           return;
         }
