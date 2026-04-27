@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { submitCode, runTests, runCode, stopCode, autoSubmitOnExpire, getExecutionStatus, sendStdin, logCheatEvent } from "@/app/actions/submission";
-import { getProblemStatus } from "@/app/actions/problem";
+import { getProblemStatus, getServerTime } from "@/app/actions/problem";
 import { updateUserNim } from "@/app/actions/auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -59,9 +59,10 @@ function computePhase(
   timingMode: 'scheduled' | 'manual',
   startTime: Date | null | undefined,
   endTime: Date | null | undefined,
-  duration: number | null | undefined
+  duration: number | null | undefined,
+  serverOffset: number = 0
 ): { phase: ProblemPhase; effectiveEndTime: Date | null } {
-  const now = new Date();
+  const now = new Date(Date.now() + serverOffset);
 
   if (timingMode === 'scheduled') {
     const start = startTime ? new Date(startTime) : null;
@@ -84,7 +85,7 @@ function computePhase(
   if (duration) {
     const end = new Date(start.getTime() + duration * 60000);
     if (now > end) {
-      return { phase: 'not_started', effectiveEndTime: null };
+      return { phase: 'ended', effectiveEndTime: end };
     }
     return { phase: 'in_progress', effectiveEndTime: end };
   }
@@ -100,6 +101,8 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
   const [isGoAppRunning, setIsGoAppRunning] = useState(false);
   const [checkingComponents, setCheckingComponents] = useState(antiCheatEnabled);
   const [isMounted, setIsMounted] = useState(false);
+  const [serverTime, setServerTime] = useState<Date | null>(null);
+  const [serverOffset, setServerOffset] = useState<number>(0);
 
   const [reviewModal, setReviewModal] = useState<{
     code: string;
@@ -144,10 +147,28 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
   const [currentStartTime, setCurrentStartTime] = useState<Date | null>(startTime ? new Date(startTime) : null);
 
   useEffect(() => {
-    setIsMounted(true);
-    const initial = computePhase(timingMode, startTime, endTime, duration);
-    setPhase(initial.phase);
-    setEffectiveEndTime(initial.effectiveEndTime);
+    const initTime = async () => {
+      try {
+        const sTime = await getServerTime();
+        setServerTime(sTime);
+        const offset = new Date(sTime).getTime() - Date.now();
+        setServerOffset(offset);
+        
+        setIsMounted(true);
+        const initial = computePhase(timingMode, startTime, endTime, duration, offset);
+        setPhase(initial.phase);
+        setEffectiveEndTime(initial.effectiveEndTime);
+      } catch (e) {
+        console.error("Failed to fetch server time", e);
+        // Fallback to local time if server time fails
+        setIsMounted(true);
+        const initial = computePhase(timingMode, startTime, endTime, duration, 0);
+        setPhase(initial.phase);
+        setEffectiveEndTime(initial.effectiveEndTime);
+      }
+    };
+    
+    initTime();
   }, [timingMode, startTime, endTime, duration]);
 
   const [code, setCode] = useState(() => getStarterCode(solutionType, functionName, className));
@@ -378,21 +399,21 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
         const newStart = new Date(status.startTime);
         setCurrentStartTime(newStart);
 
-        const newPhase = computePhase(timingMode, newStart, endTime, duration);
+        const newPhase = computePhase(timingMode, newStart, endTime, duration, serverOffset);
         setPhase(newPhase.phase);
         setEffectiveEndTime(newPhase.effectiveEndTime);
       }
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [timingMode, phase, problemId, endTime, duration]);
+  }, [timingMode, phase, problemId, endTime, duration, serverOffset]);
 
   useEffect(() => {
     if (timingMode !== 'scheduled') return;
     if (phase === 'ended') return;
 
     const interval = setInterval(() => {
-      const newPhase = computePhase(timingMode, currentStartTime, endTime, duration);
+      const newPhase = computePhase(timingMode, currentStartTime, endTime, duration, serverOffset);
       if (newPhase.phase !== phase) {
         setPhase(newPhase.phase);
         setEffectiveEndTime(newPhase.effectiveEndTime);
@@ -400,7 +421,7 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [timingMode, phase, currentStartTime, endTime, duration]);
+  }, [timingMode, phase, currentStartTime, endTime, duration, serverOffset]);
 
   const handleStartChallenge = async () => {
     if (!tempNim.trim()) {
@@ -786,9 +807,10 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
         return (
           <Timer
             startTime={currentStartTime}
+            serverTime={serverTime}
             mode="countdown-to-start"
             onExpire={() => {
-              const newPhase = computePhase(timingMode, currentStartTime, endTime, duration);
+              const newPhase = computePhase(timingMode, currentStartTime, endTime, duration, serverOffset);
               setPhase(newPhase.phase);
               setEffectiveEndTime(newPhase.effectiveEndTime);
             }}
@@ -832,7 +854,7 @@ export default function EditorClient({ problemId, endTime, duration, timingMode,
           {renderPhaseStatusBar()}
 
           {phase === 'in_progress' && effectiveEndTime && (
-            <Timer endTime={effectiveEndTime} onExpire={handleTimeExpire} />
+            <Timer endTime={effectiveEndTime} serverTime={serverTime} onExpire={handleTimeExpire} />
           )}
 
           <div className="flex gap-1 bg-[#1e1e1e] p-1 rounded border border-[#333333]">

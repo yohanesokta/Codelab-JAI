@@ -1,17 +1,51 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { getServerTime } from '@/app/actions/problem';
 
 interface TimerProps {
   endTime?: Date | null;
   startTime?: Date | null;
   mode?: 'countdown-to-end' | 'countdown-to-start';
   onExpire?: () => void;
+  serverTime?: Date | null;
 }
 
-export default function Timer({ endTime, startTime, mode = 'countdown-to-end', onExpire }: TimerProps) {
+export default function Timer({ endTime, startTime, mode = 'countdown-to-end', onExpire, serverTime }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [isUrgent, setIsUrgent] = useState(false);
+  const [offset, setOffset] = useState<number>(0);
+  const hasInitialized = useRef(false);
+
+  useEffect(() => {
+    if (serverTime) {
+      const serverMs = new Date(serverTime).getTime();
+      const localMs = Date.now();
+      setOffset(serverMs - localMs);
+      hasInitialized.current = true;
+    }
+  }, [serverTime]);
+
+  useEffect(() => {
+    const resync = async () => {
+      try {
+        const freshServerTime = await getServerTime();
+        const serverMs = new Date(freshServerTime).getTime();
+        const localMs = Date.now();
+        setOffset(serverMs - localMs);
+        hasInitialized.current = true;
+      } catch (e) {
+        console.error("Failed to resync server time:", e);
+      }
+    };
+
+    const interval = setInterval(resync, 10000); 
+    if (!serverTime && !hasInitialized.current) {
+        resync();
+    }
+    
+    return () => clearInterval(interval);
+  }, [serverTime]);
 
   useEffect(() => {
     const targetTime = mode === 'countdown-to-start' ? startTime : endTime;
@@ -20,7 +54,7 @@ export default function Timer({ endTime, startTime, mode = 'countdown-to-end', o
     const target = new Date(targetTime).getTime();
 
     const interval = setInterval(() => {
-      const now = new Date().getTime();
+      const now = Date.now() + offset;
       const distance = target - now;
 
       if (distance < 0) {
@@ -44,7 +78,7 @@ export default function Timer({ endTime, startTime, mode = 'countdown-to-end', o
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [endTime, startTime, mode, onExpire]);
+  }, [endTime, startTime, mode, onExpire, offset]);
 
   const targetTime = mode === 'countdown-to-start' ? startTime : endTime;
   if (!targetTime) return null;
@@ -54,7 +88,7 @@ export default function Timer({ endTime, startTime, mode = 'countdown-to-end', o
       <div className="flex items-center gap-2 bg-amber-900/20 border border-amber-700/50 px-3 py-1 rounded text-amber-400 font-mono text-sm font-bold">
         <span className="material-symbols-outlined text-sm">schedule</span>
         <span className="text-[10px] uppercase tracking-widest mr-1 font-bold">Mulai dalam</span>
-        {timeLeft}
+        {timeLeft || '--:--:--'}
       </div>
     );
   }
@@ -66,7 +100,7 @@ export default function Timer({ endTime, startTime, mode = 'countdown-to-end', o
         : 'bg-[#1e1e1e] border border-[#333333] text-[#007acc]'
     }`}>
       <span className="material-symbols-outlined text-sm">schedule</span>
-      {timeLeft}
+      {timeLeft || '--:--:--'}
     </div>
   );
 }

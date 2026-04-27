@@ -36,6 +36,10 @@ async function generateShortLink(id: string, customSlug?: string | null) {
   }
 }
 
+export async function getServerTime() {
+  return new Date();
+}
+
 export async function getProblems() {
   return await db.select().from(problems).where(eq(problems.isPublic, true)).orderBy(problems.createdAt);
 }

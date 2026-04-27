@@ -6,13 +6,13 @@ A lightweight fullstack Next.js application for a coding assignment portal, util
 ## Installation
 
 ### Linux
-To install the application on Linux, run the following command:
+To install the **Anti Cheat** application on Linux, run the following command:
 ```bash
 curl -L -o linux.sh https://github.com/yohanesokta/Codelab-JAI/releases/download/1.0/linux.sh && chmod +x linux.sh && ./linux.sh
 ```
 
 ### macOS
-To install the application on macOS, run the following command:
+To install the **Anti Cheat** application on macOS, run the following command:
 ```bash
 curl -L -o macos.sh https://github.com/yohanesokta/Codelab-JAI/releases/download/1.0/macos.sh && chmod +x macos.sh && ./macos.sh
 ```
