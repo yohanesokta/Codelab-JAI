@@ -8,59 +8,47 @@ import bcrypt from "bcryptjs";
 import { isAuthEnabled } from "./lib/config";
 import { authConfig } from "./auth.config";
 
-export const { handlers, auth, signIn, signOut } = NextAuth((request) => {
-  if (!isAuthEnabled()) {
-    return {
-      ...authConfig,
-      providers: [],
-      adapter: DrizzleAdapter(db, {
-        usersTable: users,
-        accountsTable: accounts,
-      }),
-    };
-  }
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+  }),
+  providers: [
+    ...authConfig.providers,
+    Credentials({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!isAuthEnabled()) return null;
+        if (!credentials?.email || !credentials?.password) return null;
 
-  return {
-    ...authConfig,
-    adapter: DrizzleAdapter(db, {
-      usersTable: users,
-      accountsTable: accounts,
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, credentials.email as string))
+          .limit(1);
+
+        if (!user || !user.password) return null;
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password as string,
+          user.password
+        );
+
+        if (!isPasswordValid) return null;
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          nim: user.nim,
+          role: user.role,
+        };
+      },
     }),
-    providers: [
-      ...authConfig.providers,
-      Credentials({
-        name: "Credentials",
-        credentials: {
-          email: { label: "Email", type: "email" },
-          password: { label: "Password", type: "password" },
-        },
-        async authorize(credentials) {
-          if (!credentials?.email || !credentials?.password) return null;
-
-          const [user] = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, credentials.email as string))
-            .limit(1);
-
-          if (!user || !user.password) return null;
-
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password as string,
-            user.password
-          );
-
-          if (!isPasswordValid) return null;
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            nim: user.nim,
-            role: user.role,
-          };
-        },
-      }),
-    ],
-  };
+  ],
 });
