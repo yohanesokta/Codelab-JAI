@@ -1,8 +1,9 @@
 'use server';
 
 import { db } from '@/db';
-import { submissions, problems, cheatLogs } from '@/db/schema';
+import { submissions, problems, cheatLogs, users } from '@/db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
+import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { getProblemById } from './problem';
 import { spawn, ChildProcess } from 'child_process';
@@ -500,4 +501,31 @@ export async function getSubmissionByUserAndProblem(problemId: string, userId: s
   
   // Return the latest submission
   return result.length > 0 ? result[result.length - 1] : null;
+}
+
+export async function getSubmissionsForExport(problemId: string) {
+  const session = await auth();
+  const user = session?.user as any;
+
+  if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) {
+    throw new Error('Unauthorized');
+  }
+
+  // Fetch all submissions for the problem with user information
+  const result = await db.select({
+    id: submissions.id,
+    nim: submissions.nim,
+    code: submissions.code,
+    status: submissions.status,
+    createdAt: submissions.createdAt,
+    userId: submissions.userId,
+    userName: users.name,
+    userEmail: users.email
+  })
+    .from(submissions)
+    .leftJoin(users, eq(submissions.userId, users.id))
+    .where(eq(submissions.problemId, problemId))
+    .orderBy(submissions.createdAt);
+
+  return result;
 }
